@@ -149,7 +149,7 @@ script: |
   # Correct tar file order
   mkdir -p temp
   pushd temp
-  tar -xf ../$SOURCEDIST
+  #tar -xf ../$SOURCEDIST
   find dsw-* | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
   popd
 
