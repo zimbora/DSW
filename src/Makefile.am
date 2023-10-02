@@ -312,6 +312,7 @@ crypto_libbitcoin_crypto_a_SOURCES = \
   crypto/hmac_sha512.cpp \
   crypto/scrypt.cpp \
   crypto/ripemd160.cpp \
+  crypto/sph_md_helper.c \
   crypto/aes_helper.c \
   crypto/blake.c \
   crypto/bmw.c \
@@ -354,9 +355,7 @@ crypto_libbitcoin_crypto_a_SOURCES = \
   crypto/echo.c \
   crypto/shabal.c \
   crypto/sph_whirlpool.h \
-  crypto/md_helper.c \
   crypto/whirlpool.c \
-  crypto/haval_helper.c \
   crypto/haval.c \
   crypto/hamsi.c \
   crypto/fugue.c \
@@ -563,7 +562,11 @@ CTAES_DIST += crypto/ctaes/ctaes.h
 CTAES_DIST += crypto/ctaes/README.md
 CTAES_DIST += crypto/ctaes/test.c
 
-EXTRA_DIST = $(CTAES_DIST)
+EXTRA_DIST =         \
+  $(CTAES_DIST)      \
+  crypto/md_helper.c \
+  crypto/hamsi_helper.c \
+  crypto/haval_helper.c
 
 
 config/pivx-config.h: config/stamp-h1
