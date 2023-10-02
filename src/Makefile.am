@@ -342,7 +342,7 @@ crypto_libbitcoin_crypto_a_SOURCES = \
   crypto/sph_luffa.h \
   crypto/sph_haval.h \
   crypto/sph_sha2.h \
-  crypto/shabal.h \
+  crypto/sph_shabal.h \
   crypto/luffa.c \
   crypto/sph_cubehash.h \
   crypto/cubehash.c \
