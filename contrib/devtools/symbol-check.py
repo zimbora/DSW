@@ -34,12 +34,12 @@ import os
 # Taking the minimum of these as our target.
 #
 # According to GNU ABI document (https://gcc.gnu.org/onlinedocs/libstdc++/manual/abi.html) this corresponds to:
-#   GCC 4.8.5: GCC_4.8.0
-#   (glibc)    GLIBC_2_17
+#   GCC 4.8.5: GCC_7.0.0
+#   (glibc)    GLIBC_2_27
 #
 MAX_VERSIONS = {
-'GCC':       (4,8,0),
-'GLIBC':     (2,17),
+'GCC':       (7,0,0),
+'GLIBC':     (2,27),
 'LIBATOMIC': (1,0)
 }
 # See here for a description of _IO_stdin_used:
