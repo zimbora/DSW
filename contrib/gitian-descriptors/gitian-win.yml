@@ -131,8 +131,10 @@ script: |
   # Correct tar file order
   mkdir -p temp
   pushd temp
-  tar xf ../$SOURCEDIST
-  find __decenomy__-* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
+  if [[ -f $SOURCEDIST ]]; then
+    tar xf ../$SOURCEDIST
+    find __decenomy__-* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
+    fi
   mkdir -p $OUTDIR/src
   cp ../$SOURCEDIST $OUTDIR/src
   popd
@@ -148,8 +150,9 @@ script: |
     cd distsrc-${i}
     INSTALLPATH=`pwd`/installed/${DISTNAME}
     mkdir -p ${INSTALLPATH}
-    tar --strip-components=1 -xf ../$SOURCEDIST
-
+    if [[ -f $SOURCEDIST ]]; then
+      tar --strip-components=1 -xf ../$SOURCEDIST
+    fi
     # Workaround for tarball not building with the bare tag version
     echo '#!/bin/true' > ../share/genbuild.sh
     mkdir src/obj
