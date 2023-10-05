@@ -24,7 +24,8 @@ packages:
 - "python3"
 - "rename"
 remotes:
-- "url": "https://github.com/zimbora/dsw.git"
+#- "url": "https://github.com/zimbora/dsw.git" use it later on
+- "url": "/home/jsilva/dsw"
   "dir": "dsw"
 files: []
 script: |
