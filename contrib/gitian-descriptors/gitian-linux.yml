@@ -33,7 +33,8 @@ packages:
 - "ca-certificates"
 - "python3"
 remotes:
-- "url": "https://github.com/zimbora/dsw.git"
+#- "url": "https://github.com/zimbora/dsw.git" use it later on
+- "url": "/home/jsilva/dsw"
   "dir": "dsw"
 files: []
 script: |
@@ -144,13 +145,13 @@ script: |
   ./autogen.sh
   CONFIG_SITE=${BASEPREFIX}/$(echo "${HOSTS}" | awk '{print $1;}')/share/config.site ./configure --prefix=/
   make dist
-  SOURCEDIST=$(echo dsw-*.tar.gz)
+  SOURCEDIST=$(echo __decenomy__-*.tar.gz)
   DISTNAME=${SOURCEDIST/%.tar.gz}
   # Correct tar file order
   mkdir -p temp
   pushd temp
   #tar -xf ../$SOURCEDIST
-  find dsw-* | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
+  find __decenomy__-* | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
   popd
 
   # Workaround for tarball not building with the bare tag version (prep)
@@ -167,7 +168,7 @@ script: |
     tar --strip-components=1 -xf ../$SOURCEDIST
 
     # Workaround for tarball not building with the bare tag version
-    echo '#!/bin/true' >share/genbuild.sh
+    echo '#!/bin/true' > ../share/genbuild.sh
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
@@ -182,8 +183,8 @@ script: |
     rm -rf ${DISTNAME}/lib/pkgconfig
     find ${DISTNAME}/bin -type f -executable -print0 | xargs -0 -n1 -I{} ../contrib/devtools/split-debug.sh {} {} {}.dbg
     #find ${DISTNAME}/lib -type f -print0 | xargs -0 -n1 -I{} ../contrib/devtools/split-debug.sh {} {} {}.dbg
-    cp ../README.md ${DISTNAME}/
-    cp ../params/install-params.sh ${DISTNAME}/
+    #cp ../README.md ${DISTNAME}/
+    #cp ../params/install-params.sh ${DISTNAME}/
     find ${DISTNAME} -not -name "*.dbg" | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}.tar.gz
     find ${DISTNAME} -name "*.dbg" | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}-debug.tar.gz
     cd ../../
