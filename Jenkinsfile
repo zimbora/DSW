@@ -60,7 +60,8 @@ pipeline {
                     cd ..
                     workspace_dir=$(pwd)
                     ls
-                    ./gitian-builder/bin/gbuild -j 2 -m 6000 --commit dsw=develop --url dsw=https://github.com/zimbora/dsw ${workspace_dir}/gitian-builder/inputs/dsw/contrib/gitian-descriptors/gitian-linux2.yml
+                    cd gitian-builder
+                    ./bin/gbuild -j 2 -m 6000 --commit dsw=develop --url dsw=https://github.com/zimbora/dsw ${workspace_dir}/gitian-builder/inputs/dsw/contrib/gitian-descriptors/gitian-linux2.yml
                 '''
             }
         }
