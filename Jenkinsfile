@@ -19,7 +19,7 @@ pipeline {
                 echo 'preparing gitian ...'
                     sh '''#!/bin/bash
                         repo_dir=$(pwd)
-                        echo env.WORKSPACE
+                        echo ${env.WORKSPACE}
                         cd ..
                         mkdir -p ${BINARIES_PATH}/${BRANCH}
                         git clone https://github.com/devrandom/gitian-builder.git
@@ -41,8 +41,10 @@ pipeline {
             steps {
                 echo 'building depends ...'
                 sh '''#!/bin/bash
+                    repo_dir=$(pwd)
+                    cd ..
                     ls
-                    make -C ./depends download SOURCES_PATH=$(pwd)/cache/common
+                    make -C ${repo_dir}/depends download SOURCES_PATH=$./gitian-builder/cache/common
                 '''
             }
         }
@@ -52,7 +54,10 @@ pipeline {
             steps {
                 echo 'building linux ...'
                 sh '''#!/bin/bash
-                    bin/gbuild -j 2 -m 6000 --commit dsw=develop --url dsw=https://github.com/zimbora/dsw ${repo_dir}/contrib/gitian-descriptors/gitian-linux2.yml
+                    repo_dir=$(pwd)
+                    cd ..
+                    ls
+                    ./gitian-builder/bin/gbuild -j 2 -m 6000 --commit dsw=develop --url dsw=https://github.com/zimbora/dsw ${repo_dir}/contrib/gitian-descriptors/gitian-linux2.yml
                 '''
             }
         }
