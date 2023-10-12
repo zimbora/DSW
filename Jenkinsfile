@@ -10,6 +10,7 @@ pipeline {
         GIT_REPO = 'https://github.com/zimbora/dsw.git'
         BRANCH = 'develop'
         USE_DOCKER = '1'
+        PROJECT = "dsw"
     }
 
     stages {
@@ -58,7 +59,33 @@ pipeline {
                     cd ..
                     workspace_dir=$(pwd)
                     cd gitian-builder
-                    ./bin/gbuild -j 2 -m 6000 --commit dsw=develop --url dsw=https://github.com/zimbora/dsw ${workspace_dir}/gitian-builder/inputs/dsw/contrib/gitian-descriptors/gitian-linux2.yml
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-linux2.yml
+                '''
+            }
+        }
+
+        stage("build_x86_64-w64-mingw32") {
+
+            steps {
+                echo 'building windows ...'
+                sh '''#!/bin/bash
+                    cd ..
+                    workspace_dir=$(pwd)
+                    cd gitian-builder
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-win2.yml
+                '''
+            }
+        }
+
+        stage("build_x86_64-apple-darwin14") {
+
+            steps {
+                echo 'building macos ...'
+                sh '''#!/bin/bash
+                    cd ..
+                    workspace_dir=$(pwd)
+                    cd gitian-builder
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-osx2.yml
                 '''
             }
         }
