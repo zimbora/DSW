@@ -32,7 +32,7 @@ pipeline {
                         bin/make-base-vm --suite bionic --arch amd64 --docker
                         git checkout bin/make-base-vm
                     '''
-                }
+
             }
         }
 
