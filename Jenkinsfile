@@ -41,9 +41,8 @@ pipeline {
             steps {
                 echo 'building depends ...'
                 sh '''#!/bin/bash
-                    echo ${repo_dir}
-                    ls ${repo_dir}
-                    make -C ${repo_dir}/depends download SOURCES_PATH=$(pwd)/cache/common
+                    ls
+                    make -C ./depends download SOURCES_PATH=$(pwd)/cache/common
                 '''
             }
         }
