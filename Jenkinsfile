@@ -9,6 +9,7 @@ pipeline {
         BINARIES_PATH = 'dsw-binaries'
         GIT_REPO = 'https://github.com/zimbora/dsw.git'
         BRANCH = 'develop'
+        USE_DOCKER = '1'
     }
 
     stages {
