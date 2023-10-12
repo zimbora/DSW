@@ -45,7 +45,6 @@ pipeline {
                     repo_dir=$(pwd)
                     cd ..
                     workspace_dir=$(pwd)
-                    ls
                     make -C ${repo_dir}/depends download SOURCES_PATH=${workspace_dir}/gitian-builder/cache/common
                 '''
             }
@@ -56,10 +55,8 @@ pipeline {
             steps {
                 echo 'building linux ...'
                 sh '''#!/bin/bash
-                    repo_dir=$(pwd)
                     cd ..
                     workspace_dir=$(pwd)
-                    ls
                     cd gitian-builder
                     ./bin/gbuild -j 2 -m 6000 --commit dsw=develop --url dsw=https://github.com/zimbora/dsw ${workspace_dir}/gitian-builder/inputs/dsw/contrib/gitian-descriptors/gitian-linux2.yml
                 '''
@@ -70,11 +67,13 @@ pipeline {
 
             steps {
                 echo 'deploy linux ...'
-
                 sh """#!/bin/bash
-                    mkdir -p ../${BINARIES_PATH}/${BRANCH}/linux
-                    mv build/out/__decenomy__*-linux64.tar.gz ../${BINARIES_PATH}/${BRANCH}/linux
-                    strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
+                    repo_dir=$(pwd)
+                    cd ..
+                    workspace_dir=$(pwd)
+                    mkdir -p ${BINARIES_PATH}/${BRANCH}/linux
+                    cd gitian-builder
+                    mv build/out/__decenomy__*-linux64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux
                 """
             }
         }
