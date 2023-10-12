@@ -44,7 +44,7 @@ pipeline {
                     repo_dir=$(pwd)
                     cd ..
                     ls
-                    make -C ${repo_dir}/depends download SOURCES_PATH=$./gitian-builder/cache/common
+                    make -C ${repo_dir}/depends download SOURCES_PATH=./gitian-builder/cache/common
                 '''
             }
         }
