@@ -14,22 +14,25 @@ pipeline {
     stages {
 
         stage("gitian") {
-            echo 'preparing gitian ...'
-                sh '''#!/bin/bash
-                    repo_dir=$(pwd)
-                    echo env.WORKSPACE
-                    cd ..
-                    mkdir -p ${BINARIES_PATH}/${BRANCH}
-                    git clone https://github.com/devrandom/gitian-builder.git
-                    cd gitian-builder
-                    mkdir inputs
-                    cd inputs
-                    git clone ${GIT_REPO}
-                    wget -c https://github.com/decenomy/depends/raw/main/SDKs/MacOSX10.11.sdk.tar.xz
-                    cd ..
-                    bin/make-base-vm --suite bionic --arch amd64 --docker
-                    git checkout bin/make-base-vm
-                '''
+
+            steps {
+                echo 'preparing gitian ...'
+                    sh '''#!/bin/bash
+                        repo_dir=$(pwd)
+                        echo env.WORKSPACE
+                        cd ..
+                        mkdir -p ${BINARIES_PATH}/${BRANCH}
+                        git clone https://github.com/devrandom/gitian-builder.git
+                        cd gitian-builder
+                        mkdir inputs
+                        cd inputs
+                        git clone ${GIT_REPO}
+                        wget -c https://github.com/decenomy/depends/raw/main/SDKs/MacOSX10.11.sdk.tar.xz
+                        cd ..
+                        bin/make-base-vm --suite bionic --arch amd64 --docker
+                        git checkout bin/make-base-vm
+                    '''
+                }
             }
         }
 
