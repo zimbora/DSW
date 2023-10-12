@@ -64,6 +64,21 @@ pipeline {
             }
         }
 
+        stage("deploy_x86_64-pc-linux-gnu") {
+
+            steps {
+                echo 'deploy linux ...'
+                sh '''#!/bin/bash
+                    repo_dir=$(pwd)
+                    cd ..
+                    workspace_dir=$(pwd)
+                    mkdir -p ${BINARIES_PATH}/${BRANCH}/linux
+                    cd gitian-builder
+                    mv build/out/${BASE_NAME}*-linux64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux
+                '''
+            }
+        }
+
         stage("build_x86_64-w64-mingw32") {
 
             steps {
@@ -73,6 +88,21 @@ pipeline {
                     workspace_dir=$(pwd)
                     cd gitian-builder
                     ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-win2.yml
+                '''
+            }
+        }
+
+        stage("deploy_x86_64-w64-mingw32") {
+
+            steps {
+                echo 'deploy windows ...'
+                sh '''#!/bin/bash
+                    repo_dir=$(pwd)
+                    cd ..
+                    workspace_dir=$(pwd)
+                    mkdir -p ${BINARIES_PATH}/${BRANCH}/windows
+                    cd gitian-builder
+                    mv build/out/${BASE_NAME}*-win64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
                 '''
             }
         }
@@ -90,20 +120,22 @@ pipeline {
             }
         }
 
-        stage("deploy_x86_64-pc-linux-gnu") {
+        stage("deploy_x86_64-apple-darwin14") {
 
             steps {
-                echo 'deploy linux ...'
+                echo 'deploy windows ...'
                 sh '''#!/bin/bash
                     repo_dir=$(pwd)
                     cd ..
                     workspace_dir=$(pwd)
-                    mkdir -p ${BINARIES_PATH}/${BRANCH}/linux
+                    mkdir -p ${BINARIES_PATH}/${BRANCH}/macosx
                     cd gitian-builder
-                    mv build/out/__decenomy__*-linux64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux
+                    mv build/out/${BASE_NAME}*-osx64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
                 '''
             }
         }
+
+
 
     }
 }
