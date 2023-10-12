@@ -67,14 +67,14 @@ pipeline {
 
             steps {
                 echo 'deploy linux ...'
-                sh """#!/bin/bash
+                sh '''#!/bin/bash
                     repo_dir=$(pwd)
                     cd ..
                     workspace_dir=$(pwd)
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/linux
                     cd gitian-builder
                     mv build/out/__decenomy__*-linux64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux
-                """
+                '''
             }
         }
 
