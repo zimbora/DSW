@@ -1,0 +1,134 @@
+---
+name: "dsw-linux-6.0"
+enable_cache: true
+distro: "ubuntu"
+suites:
+- "bionic"
+architectures:
+- "amd64"
+packages:
+- "curl"
+- "g++-aarch64-linux-gnu"
+- "g++-8-aarch64-linux-gnu"
+- "gcc-8-aarch64-linux-gnu"
+- "binutils-aarch64-linux-gnu"
+- "g++-arm-linux-gnueabihf"
+- "g++-8-arm-linux-gnueabihf"
+- "gcc-8-arm-linux-gnueabihf"
+- "binutils-arm-linux-gnueabihf"
+- "g++-riscv64-linux-gnu"
+- "g++-8-riscv64-linux-gnu"
+- "gcc-8-riscv64-linux-gnu"
+- "binutils-riscv64-linux-gnu"
+- "g++-8-multilib"
+- "gcc-8-multilib"
+- "binutils-gold"
+- "git"
+- "pkg-config"
+- "autoconf"
+- "libtool"
+- "automake"
+- "faketime"
+- "bsdmainutils"
+- "ca-certificates"
+- "python3"
+remotes:
+#- "url": "https://github.com/zimbora/dsw.git" use it later on
+- "url": "/home/jsilva/dsw-test"
+  "dir": "dsw"
+files: []
+script: |
+  set -e -o pipefail
+
+  BASE_NAME="__decenomy__"
+  HOSTS="x86_64-linux-gnu"
+  WRAP_DIR=$HOME/wrapped
+  FAKETIME_HOST_PROGS="gcc g++"
+  FAKETIME_PROGS="date ar ranlib nm"
+  export TZ="UTC"
+  export BUILD_DIR="$PWD"
+
+  mkdir -p ${WRAP_DIR}
+  if test -n "$GBUILD_CACHE_ENABLED"; then
+    export SOURCES_PATH=${GBUILD_COMMON_CACHE}
+    export BASE_CACHE=${GBUILD_PACKAGE_CACHE}
+    mkdir -p ${BASE_CACHE} ${SOURCES_PATH}
+  fi
+
+  function create_global_faketime_wrappers {
+  for prog in ${FAKETIME_PROGS}; do
+    echo '#!/usr/bin/env bash' > ${WRAP_DIR}/${prog}
+    echo "REAL=\`which -a ${prog} | grep -v ${WRAP_DIR}/${prog} | head -1\`" >> ${WRAP_DIR}/${prog}
+    echo 'export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/faketime/libfaketime.so.1' >> ${WRAP_DIR}/${prog}
+    echo "export FAKETIME=\"$1\"" >> ${WRAP_DIR}/${prog}
+    echo "\$REAL \"\$@\"" >> $WRAP_DIR/${prog}
+    chmod +x ${WRAP_DIR}/${prog}
+  done
+  }
+
+  function create_per-host_faketime_wrappers {
+  for i in $HOSTS; do
+    for prog in ${FAKETIME_HOST_PROGS}; do
+        if which ${i}-${prog}-8
+        then
+            echo '#!/usr/bin/env bash' > ${WRAP_DIR}/${i}-${prog}
+            echo "REAL=\`which -a ${i}-${prog}-8 | grep -v ${WRAP_DIR}/${i}-${prog} | head -1\`" >> ${WRAP_DIR}/${i}-${prog}
+            echo 'export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/faketime/libfaketime.so.1' >> ${WRAP_DIR}/${i}-${prog}
+            echo "export FAKETIME=\"$1\"" >> ${WRAP_DIR}/${i}-${prog}
+            echo "\$REAL \"\$@\"" >> $WRAP_DIR/${i}-${prog}
+            chmod +x ${WRAP_DIR}/${i}-${prog}
+        fi
+    done
+  done
+  }
+
+  # Faketime for depends so intermediate results are comparable
+  export PATH_orig=${PATH}
+  create_global_faketime_wrappers "2000-01-01 12:00:00"
+  create_per-host_faketime_wrappers "2000-01-01 12:00:00"
+  export PATH=${WRAP_DIR}:${PATH}
+  # Overrides default compiler
+  for prog in gcc g++; do
+  rm -f ${WRAP_DIR}/${prog}
+  cat << EOF > ${WRAP_DIR}/${prog}
+  #!/usr/bin/env bash
+  REAL="$(which -a ${prog}-8 | grep -v ${WRAP_DIR}/${prog} | head -1)"
+  \$REAL "\$@"
+  EOF
+  chmod +x ${WRAP_DIR}/${prog}
+  done
+
+  # Build dependencies
+  cd dsw
+  BASEPREFIX="${PWD}/depends"
+  cd depends
+  make -j $(nproc) HOST=x86_64-pc-linux-gnu
+  cd ..
+
+  # Faketime for binaries
+  export PATH=${PATH_orig}
+  create_global_faketime_wrappers "${REFERENCE_DATETIME}"
+  create_per-host_faketime_wrappers "${REFERENCE_DATETIME}"
+  export PATH=${WRAP_DIR}:${PATH}
+
+  # Create the release tarball using (arbitrarily) the first host
+  #make clean
+  ./autogen.sh
+  ./configure --enable-glibc-back-compat --prefix=$(pwd)/depends/x86_64-pc-linux-gnu LDFLAGS="-static-libstdc++" --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --with-pic --enable-upnp-default CPPFLAGS="-fPIC -O3" CXXFLAGS="-fPIC -O3"
+  make -j $(nproc) HOST=x86_64-pc-linux-gnu
+
+  strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
+  mkdir -p deploy/linux
+  cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/linux/
+  cd deploy/linux
+
+  FILENAMES=$(find ${BASE_NAME}* | sort)
+  #find ${BASE_NAME}* | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ./${BASE_NAME}-latest.tar.gz
+  #cp ./${BASE_NAME}-latest.tar.gz $OUTDIR
+
+  for i in ${FILENAMES}; do
+    echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${i}-linux64.tar.gz
+  done
+
+  echo $OUTDIR
+
