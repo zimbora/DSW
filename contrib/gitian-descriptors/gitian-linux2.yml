@@ -40,11 +40,18 @@ files: []
 script: |
   set -e -o pipefail
 
+  CONFIGFLAGS="--enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests --disable-online-rust"
+  HOST_CFLAGS="-O2 -g"
+  HOST_CXXFLAGS="-O2 -g"
+  HOST_LDFLAGS=-static-libstdc++
+
   BASE_NAME="__decenomy__"
   HOSTS="x86_64-linux-gnu"
   WRAP_DIR=$HOME/wrapped
   FAKETIME_HOST_PROGS="gcc g++"
   FAKETIME_PROGS="date ar ranlib nm"
+  #export QT_RCC_TEST=1
+  #export QT_RCC_SOURCE_DATE_OVERRIDE=1
   export TZ="UTC"
   export BUILD_DIR="$PWD"
 
