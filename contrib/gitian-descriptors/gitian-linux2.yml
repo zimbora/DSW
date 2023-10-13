@@ -40,10 +40,10 @@ files: []
 script: |
   set -e -o pipefail
 
-  CONFIGFLAGS="--enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests --disable-online-rust"
-  HOST_CFLAGS="-O2 -g"
-  HOST_CXXFLAGS="-O2 -g"
-  HOST_LDFLAGS=-static-libstdc++
+  #CONFIGFLAGS="--enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests --disable-online-rust"
+  #HOST_CFLAGS="-O2 -g"
+  #HOST_CXXFLAGS="-O2 -g"
+  #HOST_LDFLAGS=-static-libstdc++
 
   BASE_NAME="__decenomy__"
   HOSTS="x86_64-linux-gnu"
@@ -122,18 +122,18 @@ script: |
   #make clean
   ./autogen.sh
   ./configure --enable-glibc-back-compat --prefix=$(pwd)/depends/x86_64-pc-linux-gnu LDFLAGS="-static-libstdc++" --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --with-pic --enable-upnp-default CPPFLAGS="-fPIC -O3" CXXFLAGS="-fPIC -O3"
-  #make -j $(nproc) HOST=x86_64-pc-linux-gnu #uncomment
+  make -j $(nproc) HOST=x86_64-pc-linux-gnu #uncomment
 
-  CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS} CFLAGS="${HOST_CFLAGS}" CXXFLAGS="${HOST_CXXFLAGS}" LDFLAGS="${HOST_LDFLAGS}"
-  make ${MAKEOPTS}
-  make ${MAKEOPTS} -C src check-security
-  make ${MAKEOPTS} -C src check-symbols
-  make install DESTDIR=${INSTALLPATH}
-  cd installed
-  find . -name "lib*.la" -delete
-  find . -name "lib*.a" -delete
-  rm -rf ${DISTNAME}/lib/pkgconfig
-  cd ..
+  #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS} CFLAGS="${HOST_CFLAGS}" CXXFLAGS="${HOST_CXXFLAGS}" LDFLAGS="${HOST_LDFLAGS}"
+  #make ${MAKEOPTS}
+  #make ${MAKEOPTS} -C src check-security
+  #make ${MAKEOPTS} -C src check-symbols
+  #make install DESTDIR=${INSTALLPATH}
+  #cd installed
+  #find . -name "lib*.la" -delete
+  #find . -name "lib*.a" -delete
+  #rm -rf ${DISTNAME}/lib/pkgconfig
+  #cd ..
 
   strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
   mkdir -p deploy/linux
