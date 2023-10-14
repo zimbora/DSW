@@ -26,7 +26,7 @@ pipeline {
                         mkdir -p ${BINARIES_PATH}/${BRANCH}
                         git clone https://github.com/devrandom/gitian-builder.git
                         cd gitian-builder
-                        mkdir inputs
+                        mkdir -p inputs
                         cd inputs
                         if [ -d "/dsw" ]; then
                             cd dsw
