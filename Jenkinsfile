@@ -24,11 +24,17 @@ pipeline {
                         echo ${env.WORKSPACE}
                         cd ..
                         mkdir -p ${BINARIES_PATH}/${BRANCH}
-                        git clone https://github.com/devrandom/gitian-builder.git
+                        if [ -d "gitian-builder" ]; then
+                            cd gitian-builder
+                            git pull
+                            c..
+                        else
+                            git clone https://github.com/devrandom/gitian-builder.git
+                        fi
                         cd gitian-builder
                         mkdir -p inputs
                         cd inputs
-                        if [ -d "/dsw" ]; then
+                        if [ -d "dsw" ]; then
                             cd dsw
                             git pull
                             cd ..
@@ -37,6 +43,7 @@ pipeline {
                         fi
                         if [ ! -f "MacOSX10.11.sdk.tar.xz" ]; then
                             wget -c https://github.com/decenomy/depends/raw/main/SDKs/MacOSX10.11.sdk.tar.xz
+                        fi
                         cd ..
                         bin/make-base-vm --suite bionic --arch amd64 --docker
                         git checkout bin/make-base-vm
