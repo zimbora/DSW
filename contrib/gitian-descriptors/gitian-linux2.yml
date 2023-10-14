@@ -41,12 +41,10 @@ script: |
   set -e -o pipefail
 
   BASE_NAME="__decenomy__"
-  HOSTS="x86_64-linux-gnu"
+  HOSTS="x86_64-linux-gnu aarch64-linux-gnu"
   WRAP_DIR=$HOME/wrapped
   FAKETIME_HOST_PROGS="gcc g++"
   FAKETIME_PROGS="date ar ranlib nm"
-  export QT_RCC_TEST=1
-  export QT_RCC_SOURCE_DATE_OVERRIDE=1
   export TZ="UTC"
   export BUILD_DIR="$PWD"
 
@@ -101,11 +99,18 @@ script: |
   done
 
   # Build dependencies
+  #cd dsw
+  #BASEPREFIX="${PWD}/depends"
+  #cd depends
+  #make -j $(nproc) HOST=x86_64-pc-linux-gnu
+  #cd ..
+
   cd dsw
-  BASEPREFIX="${PWD}/depends"
-  cd depends
-  make -j $(nproc) HOST=x86_64-pc-linux-gnu
-  cd ..
+  BASEPREFIX=`pwd`/depends
+  # Build dependencies for each host
+  for i in $HOSTS; do
+    make ${MAKEOPTS} -C ${BASEPREFIX} HOST="${i}"
+  done
 
   # Faketime for binaries
   export PATH=${PATH_orig}
