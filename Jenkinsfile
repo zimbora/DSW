@@ -28,8 +28,15 @@ pipeline {
                         cd gitian-builder
                         mkdir inputs
                         cd inputs
-                        git clone ${GIT_REPO}
-                        wget -c https://github.com/decenomy/depends/raw/main/SDKs/MacOSX10.11.sdk.tar.xz
+                        if [ -d "/dsw" ]; then
+                            cd dsw
+                            git pull
+                            cd ..
+                        else
+                            git clone ${GIT_REPO}
+                        fi
+                        if [ ! -f "MacOSX10.11.sdk.tar.xz" ]; then
+                            wget -c https://github.com/decenomy/depends/raw/main/SDKs/MacOSX10.11.sdk.tar.xz
                         cd ..
                         bin/make-base-vm --suite bionic --arch amd64 --docker
                         git checkout bin/make-base-vm
