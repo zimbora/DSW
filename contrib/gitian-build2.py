@@ -145,12 +145,12 @@ def build():
 
     subprocess.check_call(['wget', '-O', 'inputs/osslsigncode-2.0.tar.gz', 'https://github.com/mtrojnar/osslsigncode/archive/2.0.tar.gz'])
     subprocess.check_call(["echo '5a60e0a4b3e0b4d655317b2f12a810211c50242138322b16e7e01c6fbb89d92f inputs/osslsigncode-2.0.tar.gz' | sha256sum -c"], shell=True)
-    subprocess.check_call(['make', '-C', '../dsw/depends', 'download', 'SOURCES_PATH=' + os.getcwd() + '/cache/common'])
+    subprocess.check_call([])
 
     if args.linux:
         print('\nCompiling ' + args.version + ' Linux')
-        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-linux2.yml'])
-        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-linux', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-linux2.yml'])
+        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-linux64.yml'])
+        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-linux', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-linux64.yml'])
         subprocess.check_call('mv build/out/__decenomy__*-linux64.tar.gz ../dsw-binaries/'+args.version, shell=True)
 
     if args.windows:
@@ -223,7 +223,7 @@ def verify():
     os.chdir('gitian-builder')
 
     print('\nVerifying v'+args.version+' Linux\n')
-    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-linux', '../dsw/contrib/gitian-descriptors/gitian-linux2.yml']):
+    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-linux', '../dsw/contrib/gitian-descriptors/gitian-linux64.yml']):
         print('Verifying v'+args.version+' Linux FAILED\n')
         rc = 1
 

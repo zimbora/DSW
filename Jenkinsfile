@@ -54,12 +54,12 @@ pipeline {
         stage("build_x86_64-pc-linux-gnu") {
 
             steps {
-                echo 'building linux ...'
+                echo 'building linux64 ...'
                 sh '''#!/bin/bash
                     cd ..
                     workspace_dir=$(pwd)
                     cd gitian-builder
-                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-linux2.yml
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-linux64.yml
                 '''
             }
         }
@@ -67,14 +67,42 @@ pipeline {
         stage("deploy_x86_64-pc-linux-gnu") {
 
             steps {
+                echo 'deploy arm64 ...'
+                sh '''#!/bin/bash
+                    repo_dir=$(pwd)
+                    cd ..
+                    workspace_dir=$(pwd)
+                    mkdir -p ${BINARIES_PATH}/${BRANCH}/linux64
+                    cd gitian-builder
+                    mv build/out/${BASE_NAME}*-linux64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
+                '''
+            }
+        }
+
+        stage("build_arch64-linux-gnu") {
+
+            steps {
+                echo 'building arm64 ...'
+                sh '''#!/bin/bash
+                    cd ..
+                    workspace_dir=$(pwd)
+                    cd gitian-builder
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-arm64.yml
+                '''
+            }
+        }
+
+        stage("deploy_arch64-linux-gnu") {
+
+            steps {
                 echo 'deploy linux ...'
                 sh '''#!/bin/bash
                     repo_dir=$(pwd)
                     cd ..
                     workspace_dir=$(pwd)
-                    mkdir -p ${BINARIES_PATH}/${BRANCH}/linux
+                    mkdir -p ${BINARIES_PATH}/${BRANCH}/arm64
                     cd gitian-builder
-                    mv build/out/${BASE_NAME}*-linux64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux
+                    mv build/out/${BASE_NAME}*-arm64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/arm64
                 '''
             }
         }

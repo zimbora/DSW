@@ -33,15 +33,14 @@ packages:
 - "ca-certificates"
 - "python3"
 remotes:
-#- "url": "https://github.com/zimbora/dsw.git" use it later on
-- "url": "/home/jsilva/dsw-test"
+- "url": "https://github.com/zimbora/dsw.git"
   "dir": "dsw"
 files: []
 script: |
   set -e -o pipefail
 
   BASE_NAME="__decenomy__"
-  HOSTS="x86_64-linux-gnu aarch64-linux-gnu"
+  HOSTS="x86_64-linux-gnu"
   WRAP_DIR=$HOME/wrapped
   FAKETIME_HOST_PROGS="gcc g++"
   FAKETIME_PROGS="date ar ranlib nm"
@@ -136,14 +135,11 @@ script: |
   #cd ..
 
   strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
-  mkdir -p deploy/linux
-  cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/linux/
-  cd deploy/linux
+  mkdir -p deploy/linux64
+  cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/linux64/
+  cd deploy/linux64
 
   FILENAMES=$(find ${BASE_NAME}* | sort)
-  #find ${BASE_NAME}* | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ./${BASE_NAME}-latest.tar.gz
-  #cp ./${BASE_NAME}-latest.tar.gz $OUTDIR
-
   for i in ${FILENAMES}; do
     echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${i}-linux64.tar.gz
   done
