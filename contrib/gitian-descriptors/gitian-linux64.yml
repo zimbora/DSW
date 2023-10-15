@@ -40,7 +40,7 @@ script: |
   set -e -o pipefail
 
   BASE_NAME="__decenomy__"
-  HOSTS="x86_64-linux-gnu"
+  HOSTS="x86_64-pc-linux-gnu"
   WRAP_DIR=$HOME/wrapped
   FAKETIME_HOST_PROGS="gcc g++"
   FAKETIME_PROGS="date ar ranlib nm"
