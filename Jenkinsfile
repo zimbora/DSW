@@ -26,7 +26,7 @@ pipeline {
                         mkdir -p ${BINARIES_PATH}/${BRANCH}
                         if [ -d "gitian-builder" ]; then
                             cd gitian-builder
-                            git pull
+                            git pull origin master
                             c..
                         else
                             git clone https://github.com/devrandom/gitian-builder.git
@@ -36,7 +36,7 @@ pipeline {
                         cd inputs
                         if [ -d "dsw" ]; then
                             cd dsw
-                            git pull
+                            git pull origin develop
                             cd ..
                         else
                             git clone ${GIT_REPO}
