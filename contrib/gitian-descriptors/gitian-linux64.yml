@@ -134,6 +134,10 @@ script: |
 
   ./autogen.sh
   CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS} CFLAGS="${HOST_CFLAGS}" CXXFLAGS="${HOST_CXXFLAGS}" LDFLAGS="${HOST_LDFLAGS}"
+
+  make dist
+  make -C src obj/build.h
+
   make ${MAKEOPTS}
   #make ${MAKEOPTS} -C src check-security
   #make ${MAKEOPTS} -C src check-symbols
