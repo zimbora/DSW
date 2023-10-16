@@ -136,12 +136,6 @@ script: |
   make ${MAKEOPTS}
   #make ${MAKEOPTS} -C src check-security
   #make ${MAKEOPTS} -C src check-symbols
-  make install DESTDIR=${INSTALLPATH}
-  cd installed
-  find . -name "lib*.la" -delete
-  find . -name "lib*.a" -delete
-  rm -rf ${DISTNAME}/lib/pkgconfig
-  cd ..
 
   strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
   mkdir -p deploy/linux64
