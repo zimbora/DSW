@@ -98,18 +98,19 @@ script: |
   done
 
   # Build dependencies
-  cd dsw
-  BASEPREFIX="${PWD}/depends"
-  cd depends
-  make -j $(nproc) HOST=aarch64-linux-gnu
-  cd ..
-
   #cd dsw
-  #BASEPREFIX=`pwd`/depends
+  #BASEPREFIX="${PWD}/depends"
+  #cd depends
+  #make -j $(nproc) HOST=aarch64-linux-gnu
+  #cd ..
+
+  cd dsw
+  BASEPREFIX=`pwd`/depends
   # Build dependencies for each host
-  #for i in $HOSTS; do
-  #  make ${MAKEOPTS} -C ${BASEPREFIX} HOST="${i}"
-  #done
+  for i in $HOSTS; do
+    echo ${MAKEOPTS}
+    make ${MAKEOPTS} -C ${BASEPREFIX} HOST="${i}"
+  done
 
   # Faketime for binaries
   export PATH=${PATH_orig}
