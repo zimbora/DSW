@@ -86,6 +86,10 @@ script: |
   create_global_faketime_wrappers "2000-01-01 12:00:00"
   create_per-host_faketime_wrappers "2000-01-01 12:00:00"
   export PATH=${WRAP_DIR}:${PATH}
+
+  EXTRA_INCLUDES_BASE=$WRAP_DIR/extra_includes
+  mkdir -p $EXTRA_INCLUDES_BASE
+
   # Overrides default compiler
   for prog in gcc g++; do
   rm -f ${WRAP_DIR}/${prog}
@@ -108,6 +112,10 @@ script: |
   BASEPREFIX=`pwd`/depends
   # Build dependencies for each host
   for i in $HOSTS; do
+    EXTRA_INCLUDES="$EXTRA_INCLUDES_BASE/$i"
+    if [ -d "$EXTRA_INCLUDES" ]; then
+      export HOST_ID_SALT="$EXTRA_INCLUDES"
+    fi
     make ${MAKEOPTS} -C ${BASEPREFIX} HOST="${i}"
   done
 
