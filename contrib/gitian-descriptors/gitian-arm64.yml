@@ -108,7 +108,6 @@ script: |
   BASEPREFIX=`pwd`/depends
   # Build dependencies for each host
   for i in $HOSTS; do
-    echo ${MAKEOPTS}
     make ${MAKEOPTS} -C ${BASEPREFIX} HOST="${i}"
   done
 
@@ -119,21 +118,21 @@ script: |
   export PATH=${WRAP_DIR}:${PATH}
 
   # Create the release tarball
-  #make clean
-  #./autogen.sh
-  #./configure --prefix=$(pwd)/depends/aarch64-linux-gnu --disable-debug --disable-tests --disable-bench --enable-upnp-default CFLAGS="-O3" CXXFLAGS="-O3"
-  #make -j $(nproc) HOST=aarch64-linux-gnu
+  make clean
+  ./autogen.sh
+  ./configure --prefix=$(pwd)/depends/aarch64-linux-gnu --disable-debug --disable-tests --disable-bench --enable-upnp-default CFLAGS="-O3" CXXFLAGS="-O3"
+  make -j $(nproc) HOST=aarch64-linux-gnu
 
-  CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS} CFLAGS="${HOST_CFLAGS}" CXXFLAGS="${HOST_CXXFLAGS}" LDFLAGS="${HOST_LDFLAGS}"
-  make ${MAKEOPTS}
+  #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS} CFLAGS="${HOST_CFLAGS}" CXXFLAGS="${HOST_CXXFLAGS}" LDFLAGS="${HOST_LDFLAGS}"
+  #make ${MAKEOPTS}
   #make ${MAKEOPTS} -C src check-security
   #make ${MAKEOPTS} -C src check-symbols
-  make install DESTDIR=${INSTALLPATH}
-  cd installed
-  find . -name "lib*.la" -delete
-  find . -name "lib*.a" -delete
-  rm -rf ${DISTNAME}/lib/pkgconfig
-  cd ..
+  #make install DESTDIR=${INSTALLPATH}
+  #cd installed
+  #find . -name "lib*.la" -delete
+  #find . -name "lib*.a" -delete
+  #rm -rf ${DISTNAME}/lib/pkgconfig
+  #cd ..
 
   #strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
   mkdir -p deploy/arm64
