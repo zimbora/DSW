@@ -144,10 +144,8 @@ script: |
   # Create the release tarball using (arbitrarily) the first host
   #git update-index --assume-unchanged src/chiabls/contrib/relic/include/relic_conf.h.in
   ./autogen.sh
-
-  #CONFIG_SITE=${BASEPREFIX}/$(echo "${HOSTS}" | awk '{print $1;}')/share/config.site ./configure --prefix=/
-  #make dist
-
+  CONFIG_SITE=${BASEPREFIX}/$(echo "${HOSTS}" | awk '{print $1;}')/share/config.site ./configure --prefix=/
+  make dist
   SOURCEDIST=$(echo __decenomy__-*.tar.gz)
   DISTNAME=${SOURCEDIST/%.tar.gz}
 
@@ -180,7 +178,7 @@ script: |
     make ${MAKEOPTS}
     make ${MAKEOPTS} -C src check-security
     make ${MAKEOPTS} -C src check-symbols
-    #make install DESTDIR=${INSTALLPATH}
+    make install DESTDIR=${INSTALLPATH}
     cd installed
     find . -name "lib*.la" -delete
     find . -name "lib*.a" -delete
