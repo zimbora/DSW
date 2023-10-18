@@ -189,7 +189,8 @@ script: |
 
     FILENAMES=$(find ${BASE_NAME}*/bin/${BASE_NAME}* -not -name "*.dbg" | sort)
     for i in ${FILENAMES}; do
-      echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${i}-linux64.tar.gz
+      filename=$(basename "$i")
+      echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${filename}-linux64.tar.gz
     done
 
     #find ${DISTNAME} -name "*.dbg" | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}-debug.tar.gz
