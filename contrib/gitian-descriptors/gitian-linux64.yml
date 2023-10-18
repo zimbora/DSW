@@ -45,6 +45,7 @@ script: |
   WRAP_DIR=$HOME/wrapped
   FAKETIME_HOST_PROGS="gcc g++"
   FAKETIME_PROGS="date ar ranlib nm"
+  export QT_RCC_SOURCE_DATE_OVERRIDE=1
   export TZ="UTC"
   export BUILD_DIR="$PWD"
   HOST_CFLAGS="-O2 -g"
