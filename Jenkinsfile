@@ -64,7 +64,7 @@ pipeline {
                 '''
             }
         }
-
+        /*
         stage("build_x86_64-pc-linux-gnu") {
 
             steps {
@@ -148,7 +148,7 @@ pipeline {
                 '''
             }
         }
-
+        */
         stage("build_x86_64-apple-darwin14") {
 
             steps {

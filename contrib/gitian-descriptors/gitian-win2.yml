@@ -124,8 +124,6 @@ script: |
 
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
-  #CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
-  #make dist
   ./configure --prefix=$(pwd)/depends/x86_64-w64-mingw32 --disable-debug --disable-tests --disable-bench --enable-upnp-default CFLAGS="-O3" CXXFLAGS="-O3"
   make -j $(nproc) HOST=x86_64-w64-mingw32
 
