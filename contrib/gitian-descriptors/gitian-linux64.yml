@@ -107,23 +107,25 @@ script: |
   done
 
   # Build dependencies
-  #cd dsw
-  #BASEPREFIX="${PWD}/depends"
-  #cd depends
-  #make -j $(nproc) HOST=x86_64-pc-linux-gnu
-  #cd ..
-
-  cd dsw
-  BASEPREFIX=`pwd`/depends
-  # Build dependencies for each host
   for i in $HOSTS; do
-    EXTRA_INCLUDES="$EXTRA_INCLUDES_BASE/$i"
-    if [ -d "$EXTRA_INCLUDES" ]; then
-      export HOST_ID_SALT="$EXTRA_INCLUDES"
-    fi
-    make ${MAKEOPTS} -C ${BASEPREFIX} HOST="${i}"
-    unset HOST_ID_SALT
+    cd dsw
+    BASEPREFIX="${PWD}/depends"
+    cd depends
+    make -j $(nproc) HOST=${i}
+    cd ..
   done
+
+  #cd dsw
+  # Build dependencies for each host
+  #for i in $HOSTS; do
+    #BASEPREFIX="${PWD}/depends/${i}"
+    #EXTRA_INCLUDES="$EXTRA_INCLUDES_BASE/$i"
+    #if [ -d "$EXTRA_INCLUDES" ]; then
+      #export HOST_ID_SALT="$EXTRA_INCLUDES"
+    #fi
+    #make ${MAKEOPTS} -C ${BASEPREFIX} HOST="${i}"
+    #unset HOST_ID_SALT
+  #done
 
   # Faketime for binaries
   export PATH=${PATH_orig}
@@ -131,21 +133,13 @@ script: |
   create_per-host_faketime_wrappers "${REFERENCE_DATETIME}"
   export PATH=${WRAP_DIR}:${PATH}
 
-  # Create the release tarball
-  #make clean
-  ./autogen.sh
-  ./configure --enable-glibc-back-compat --prefix=$(pwd)/depends/x86_64-pc-linux-gnu LDFLAGS="-static-libstdc++" --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --with-pic --enable-upnp-default CPPFLAGS="-fPIC -O3" CXXFLAGS="-fPIC -O3"
-  make -j $(nproc) HOST=x86_64-pc-linux-gnu
-
-  #./autogen.sh
-  #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS} CFLAGS="${HOST_CFLAGS}" CXXFLAGS="${HOST_CXXFLAGS}" LDFLAGS="${HOST_LDFLAGS}"
-
-  #make dist
-  #make -C src obj/build.h
-
-  #make ${MAKEOPTS}
-  #make ${MAKEOPTS} -C src check-security
-  #make ${MAKEOPTS} -C src check-symbols
+  for i in $HOSTS; do
+    # Create the release tarball
+    #make clean
+    ./autogen.sh
+    ./configure --enable-glibc-back-compat --prefix=$(pwd)/depends/${i} LDFLAGS="-static-libstdc++" --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --with-pic --enable-upnp-default CPPFLAGS="-fPIC -O3" CXXFLAGS="-fPIC -O3"
+    make -j $(nproc) HOST=${i}
+  done
 
   strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
   mkdir -p deploy/linux64
