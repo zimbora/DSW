@@ -40,7 +40,6 @@ script: |
   set -e -o pipefail
 
   BASE_NAME="__decenomy__"
-  #HOSTS="x86_64-linux-gnu"
   HOSTS="x86_64-pc-linux-gnu"
   WRAP_DIR=$HOME/wrapped
   FAKETIME_HOST_PROGS="gcc g++"
@@ -48,9 +47,6 @@ script: |
   export QT_RCC_SOURCE_DATE_OVERRIDE=1
   export TZ="UTC"
   export BUILD_DIR="$PWD"
-  HOST_CFLAGS="-O2 -g"
-  HOST_CXXFLAGS="-O2 -g"
-  HOST_LDFLAGS=-static-libstdc++
 
   mkdir -p ${WRAP_DIR}
   if test -n "$GBUILD_CACHE_ENABLED"; then
@@ -114,18 +110,6 @@ script: |
     make -j $(nproc) HOST=${i}
     cd ..
   done
-
-  #cd dsw
-  # Build dependencies for each host
-  #for i in $HOSTS; do
-    #BASEPREFIX="${PWD}/depends/${i}"
-    #EXTRA_INCLUDES="$EXTRA_INCLUDES_BASE/$i"
-    #if [ -d "$EXTRA_INCLUDES" ]; then
-      #export HOST_ID_SALT="$EXTRA_INCLUDES"
-    #fi
-    #make ${MAKEOPTS} -C ${BASEPREFIX} HOST="${i}"
-    #unset HOST_ID_SALT
-  #done
 
   # Faketime for binaries
   export PATH=${PATH_orig}
