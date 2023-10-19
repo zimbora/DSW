@@ -133,17 +133,17 @@ script: |
 
   # Create the release tarball
   #make clean
-  #./autogen.sh
-  #./configure --enable-glibc-back-compat --prefix=$(pwd)/depends/x86_64-pc-linux-gnu LDFLAGS="-static-libstdc++" --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --with-pic --enable-upnp-default CPPFLAGS="-fPIC -O3" CXXFLAGS="-fPIC -O3"
-  #make -j $(nproc) HOST=x86_64-pc-linux-gnu
-
   ./autogen.sh
-  CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS} CFLAGS="${HOST_CFLAGS}" CXXFLAGS="${HOST_CXXFLAGS}" LDFLAGS="${HOST_LDFLAGS}"
+  ./configure --enable-glibc-back-compat --prefix=$(pwd)/depends/x86_64-pc-linux-gnu LDFLAGS="-static-libstdc++" --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --with-pic --enable-upnp-default CPPFLAGS="-fPIC -O3" CXXFLAGS="-fPIC -O3"
+  make -j $(nproc) HOST=x86_64-pc-linux-gnu
 
-  make dist
-  make -C src obj/build.h
+  #./autogen.sh
+  #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS} CFLAGS="${HOST_CFLAGS}" CXXFLAGS="${HOST_CXXFLAGS}" LDFLAGS="${HOST_LDFLAGS}"
 
-  make ${MAKEOPTS}
+  #make dist
+  #make -C src obj/build.h
+
+  #make ${MAKEOPTS}
   #make ${MAKEOPTS} -C src check-security
   #make ${MAKEOPTS} -C src check-symbols
 
