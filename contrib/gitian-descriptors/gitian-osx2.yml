@@ -119,7 +119,7 @@ script: |
   #OSX_VOLNAME="$(cat osx_volname)"
 
   make deploy
-  ${WRAP_DIR}/dmg dmg "${NAME}.dmg" ${OUTDIR}/${HOSTS}-osx64-unsigned.dmg
+  ${WRAP_DIR}/dmg dmg "${NAME}-Core.dmg" ${OUTDIR}/${HOSTS}-osx64-unsigned.dmg
 
   mkdir -p deploy/macos
   cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt ${NAME}-Core.dmg deploy/macos/
