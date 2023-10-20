@@ -33,7 +33,9 @@ script: |
 
   WRAP_DIR=$HOME/wrapped
   HOSTS="x86_64-w64-mingw32"
+  NAME = '__Decenomy__'
   BASE_NAME="__decenomy__"
+  ZIP_NAME = '__DSW__'
   CONFIGFLAGS="--enable-reduce-exports --disable-bench --disable-gui-tests"
   FAKETIME_HOST_PROGS="ar ranlib nm windres strip objcopy"
   FAKETIME_PROGS="date makensis zip"
@@ -136,5 +138,14 @@ script: |
   for i in ${FILENAMES}; do
     echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${i}-win64.tar.gz
   done
+
+  #zip ${ZIP_NAME}-\$(../${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-Windows.zip ${BASE_NAME}d.exe ${BASE_NAME}-cli.exe ${BASE_NAME}-tx.exe ${BASE_NAME}-qt.exe
+  #mkdir -p ../../contrib/innosetup/package
+  #mv ${BASE_NAME}* ../../contrib/innosetup/package/
+  #cd ../../contrib/innosetup/
+  #wine ~/.wine/drive_c/Program\\ Files\\ \\(x86\\)/Inno\\ Setup\\ 6/ISCC.exe setup.iss
+  #mv output/${NAME}Setup.exe ../../deploy/windows/${NAME}-\$(../../deploy/${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-Setup.exe
+  #cd ../../deploy/windows/
+  #zip ${ZIP_NAME}-\$(../${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-WindowsSetup.zip ${NAME}-\$(../${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-Setup.exe
 
   echo $OUTDIR
