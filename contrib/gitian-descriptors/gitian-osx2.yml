@@ -119,6 +119,7 @@ script: |
   #OSX_VOLNAME="$(cat osx_volname)"
 
   make deploy
+  ls
   ${WRAP_DIR}/dmg dmg "${NAME}-Core.dmg" ${OUTDIR}/${HOSTS}-osx64-unsigned.dmg
 
   mkdir -p deploy/macos
