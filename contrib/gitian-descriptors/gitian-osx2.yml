@@ -116,7 +116,7 @@ script: |
 
   #strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
 
-  #make deploy HOST=${HOSTS}
+  make deploy
   mkdir -p deploy/macos
 
   cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt ${NAME}-Core.dmg deploy/macos/
