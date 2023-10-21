@@ -132,8 +132,9 @@ script: |
   popd
 
   make deploy HOST=${HOSTS}
+  pwd
   ls
-  ls ${WRAP_DIR}/dmg
+  ls ${WRAP_DIR}/dmg/
   ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${DISTNAME}-osx-unsigned.dmg
 
   mkdir -p deploy/macos
