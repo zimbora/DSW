@@ -141,7 +141,7 @@ script: |
     make ${MAKEOPTS}
     make install-strip DESTDIR=${INSTALLPATH}
 
-    #make osx_volname
+    make osx_volname
     #make deploydir
     #OSX_VOLNAME="$(cat osx_volname)"
     #mkdir -p unsigned-app-${i}
@@ -157,7 +157,8 @@ script: |
     #popd
 
     make deploy
-    #${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${DISTNAME}-osx-unsigned.dmg
+    ls
+    ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${DISTNAME}-osx-unsigned.dmg
 
     cd installed
     find . -name "lib*.la" -delete
