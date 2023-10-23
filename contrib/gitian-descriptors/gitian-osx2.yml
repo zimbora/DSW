@@ -184,9 +184,9 @@ script: |
     cd ../../
   done
 
-  FILENAMES=$(find ${NAME}* | sort)
-  for i in ${FILENAMES}; do
-    echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${i}-osx64.tar.gz
-  done
+  #FILENAMES=$(find ${NAME}* | sort)
+  #for i in ${FILENAMES}; do
+  # echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${i}-osx64.tar.gz
+  #done
 
   echo $OUTDIR
