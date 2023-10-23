@@ -110,8 +110,10 @@ script: |
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
   #CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
+  #make dist
   ./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-  make dist
+  make -j $(nproc) HOST=${i}
+
   SOURCEDIST=`echo __decenomy__-*.tar.gz`
   DISTNAME=`echo ${SOURCEDIST} | sed 's/.tar.*//'`
 
@@ -136,24 +138,16 @@ script: |
     tar --strip-components=1 -xf ../$SOURCEDIST
 
     # Workaround for tarball not building with the bare tag version
-    #echo '#!/bin/true' > ../share/genbuild.sh
-    #mkdir src/obj
-    #cp ../src/obj/build.h src/obj/
+    echo '#!/bin/true' > ../share/genbuild.sh
+    mkdir src/obj
+    cp ../src/obj/build.h src/obj/
 
     ./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-    #make -j $(nproc) HOST=${i}
-
-    # fails libdb4.8++-dev headers
-    #./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --enable-upnp-default ${CONFIGFLAGS}
+    make -j $(nproc) HOST=${i}
 
     # fails pivx.cpp
-    #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/${HOSTS} --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
-
-    # fails libdb4.8++-dev headers
-    #./configure --prefix=$(pwd)/depends/${HOSTS} --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
+    #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
     #make ${MAKEOPTS}
-
-    make HOST=${i}
 
     make install-strip DESTDIR=${INSTALLPATH}
 
