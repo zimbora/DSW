@@ -136,9 +136,9 @@ script: |
     tar --strip-components=1 -xf ../$SOURCEDIST
 
     # Workaround for tarball not building with the bare tag version
-    echo '#!/bin/true' > ../share/genbuild.sh
-    mkdir src/obj
-    cp ../src/obj/build.h src/obj/
+    #echo '#!/bin/true' > ../share/genbuild.sh
+    #mkdir src/obj
+    #cp ../src/obj/build.h src/obj/
 
     ./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
     #make -j $(nproc) HOST=${i}
