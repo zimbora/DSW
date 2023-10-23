@@ -109,37 +109,71 @@ script: |
 
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
-  ./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-  #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
-
-  make -j $(nproc) HOST=${HOSTS}
+  CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
+  make dist
   SOURCEDIST=`echo __decenomy__-*.tar.gz`
   DISTNAME=`echo ${SOURCEDIST} | sed 's/.tar.*//'`
 
-  #strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
-
-  make osx_volname
-  make deploydir
-  OSX_VOLNAME="$(cat osx_volname)"
-  mkdir -p unsigned-app-${i}
-  cp osx_volname unsigned-app-${i}/
-  cp contrib/macdeploy/detached-sig-apply.sh unsigned-app-${i}
-  cp contrib/macdeploy/detached-sig-create.sh unsigned-app-${i}
-  cp ${BASEPREFIX}/${i}/native/bin/dmg ${BASEPREFIX}/${i}/native/bin/genisoimage unsigned-app-${i}
-  cp ${BASEPREFIX}/${i}/native/bin/${i}-codesign_allocate unsigned-app-${i}/codesign_allocate
-  cp ${BASEPREFIX}/${i}/native/bin/${i}-pagestuff unsigned-app-${i}/pagestuff
-  mv dist unsigned-app-${i}
-  pushd unsigned-app-${i}
-  find . | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${BASE_NAME}-osx-unsigned.tar.gz
+  # Correct tar file order
+  mkdir -p temp
+  pushd temp
+  tar xf ../$SOURCEDIST
+  find __decenomy__-* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
   popd
 
-  make deploy
-  ls
-  cp __Decenomy__-Core.dmg ${WRAP_DIR}
-  ls ${WRAP_DIR}
-  echo $PWD
-  ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${BASE_NAME}-osx-unsigned.dmg
-  mkdir -p deploy/macos
+  # Workaround for tarball not building with the bare tag version (prep)
+  make -C src obj/build.h
+
+  ORIGPATH="$PATH"
+  # Extract the release tarball into a dir for each host and build
+  for i in ${HOSTS}; do
+    export PATH=${BASEPREFIX}/${i}/native/bin:${ORIGPATH}
+    mkdir -p distsrc-${i}
+    cd distsrc-${i}
+    INSTALLPATH=`pwd`/installed/${DISTNAME}
+    mkdir -p ${INSTALLPATH}
+    tar --strip-components=1 -xf ../$SOURCEDIST
+
+    # Workaround for tarball not building with the bare tag version
+    echo '#!/bin/true' > ../share/genbuild.sh
+    mkdir src/obj
+    cp ../src/obj/build.h src/obj/
+
+    #./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+    #./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --enable-upnp-default ${CONFIGFLAGS}
+    CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
+    make ${MAKEOPTS}
+    #make -j $(nproc) HOST=${HOSTS}
+    make install-strip DESTDIR=${INSTALLPATH}
+
+    make osx_volname
+    make deploydir
+    OSX_VOLNAME="$(cat osx_volname)"
+    mkdir -p unsigned-app-${i}
+    cp osx_volname unsigned-app-${i}/
+    cp contrib/macdeploy/detached-sig-apply.sh unsigned-app-${i}
+    cp contrib/macdeploy/detached-sig-create.sh unsigned-app-${i}
+    cp ${BASEPREFIX}/${i}/native/bin/dmg ${BASEPREFIX}/${i}/native/bin/genisoimage unsigned-app-${i}
+    cp ${BASEPREFIX}/${i}/native/bin/${i}-codesign_allocate unsigned-app-${i}/codesign_allocate
+    cp ${BASEPREFIX}/${i}/native/bin/${i}-pagestuff unsigned-app-${i}/pagestuff
+    mv dist unsigned-app-${i}
+    pushd unsigned-app-${i}
+    find . | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-osx-unsigned.tar.gz
+    popd
+
+    make deploy
+    ls
+    ls ${WRAP_DIR}
+    echo $PWD
+    ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${DISTNAME}-osx-unsigned.dmg
+
+    cd installed
+    find . -name "lib*.la" -delete
+    find . -name "lib*.a" -delete
+    rm -rf ${DISTNAME}/lib/pkgconfig
+    find ${DISTNAME} | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}.tar.gz
+    cd ../../
+  done
 
   cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt ${NAME}-Core.dmg deploy/macos/
   cd deploy/macos
