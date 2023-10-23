@@ -105,6 +105,7 @@ script: |
   for i in $HOSTS; do
     make -j 2 HOST=${i}
   done
+  cd ..
 
   # Faketime for binaries
   export PATH=${PATH_orig}
