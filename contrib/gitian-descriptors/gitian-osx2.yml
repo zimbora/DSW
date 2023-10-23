@@ -135,8 +135,9 @@ script: |
 
   make deploy
   ls
+  cp __Decenomy__-Core.dmg ${WRAP_DIR}
   ls ${WRAP_DIR}
-  curr_dir=pwd
+  echo $PWD
   ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${BASE_NAME}-osx-unsigned.dmg
   mkdir -p deploy/macos
 
