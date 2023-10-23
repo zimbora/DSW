@@ -102,7 +102,7 @@ script: |
 
   # Build dependencies for each host
   for i in $HOSTS; do
-    make -j $(nproc) HOST="${i}"
+    make HOST="${i}"
   done
 
   # Faketime for binaries
@@ -145,7 +145,7 @@ script: |
     cp ../src/obj/build.h src/obj/
 
     ./configure --prefix=$(pwd)/depends/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-    make -j $(nproc) HOST=${i}
+    make HOST=${i}
 
     # fails pivx.cpp
     #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
