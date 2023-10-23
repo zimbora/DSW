@@ -45,7 +45,7 @@ pipeline {
                             wget -c https://github.com/decenomy/depends/raw/main/SDKs/MacOSX10.11.sdk.tar.xz
                         fi
                         cd ..
-                        bin/make-base-vm --suite bionic --arch amd64 --docker
+                        bin/make-base-vm --suite bionic --arch amd64 --docker --docker-image-hash 152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c97
                         git checkout bin/make-base-vm
                     '''
 
