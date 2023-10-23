@@ -102,7 +102,7 @@ script: |
 
   # Build dependencies for each host
   for i in $HOSTS; do
-    make HOST="${i}"
+    make HOST=${i}
   done
 
   # Faketime for binaries
