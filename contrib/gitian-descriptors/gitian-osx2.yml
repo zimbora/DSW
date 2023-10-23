@@ -110,7 +110,7 @@ script: |
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
   #./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-  ./configure --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+  ./configure --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
   make -j $(nproc) HOST=${HOSTS}
   SOURCEDIST=`echo __decenomy__-*.tar.gz`
   DISTNAME=`echo ${SOURCEDIST} | sed 's/.tar.*//'`
