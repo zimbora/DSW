@@ -144,7 +144,7 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
-    ./contrib/install_db4.sh
+    ./contrib/install_db4.sh $(pwd)
     ./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
     make -j $(nproc) HOST=${i}
 
