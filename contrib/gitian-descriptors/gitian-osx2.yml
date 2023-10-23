@@ -175,6 +175,7 @@ script: |
     cd ../../
   done
 
+  mkdir -p deploy/macos
   cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt ${NAME}-Core.dmg deploy/macos/
   cd deploy/macos
 
