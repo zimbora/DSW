@@ -28,7 +28,8 @@ packages:
 - "python3-dev"
 - "python3-setuptools"
 - "fonts-tuffy"
-#- "libdb4.8++-dev"
+- "libdb4.8-dev"
+- "libdb4.8++-dev"
 remotes:
 #- "url": "https://github.com/zimbora/dsw.git" use it later on
 - "url": "/home/jsilva/dsw-test"
@@ -110,9 +111,9 @@ script: |
 
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
-  #CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
-  ./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+  CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
   make dist
+  #./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
   #make -j $(nproc) HOST=${i}
 
   SOURCEDIST=`echo __decenomy__-*.tar.gz`
