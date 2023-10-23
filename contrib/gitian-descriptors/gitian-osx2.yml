@@ -157,6 +157,11 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
+    cd ${BASEPREFIX}
+    # Build dependencies for each host
+    make -j 2 HOST=${i}
+    cd ..
+
     ./configure --prefix=$(pwd)/depends/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
     make HOST=${i}
 
