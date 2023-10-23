@@ -39,6 +39,8 @@ files:
 script: |
   set -e -o pipefail
 
+  nproc=2
+
   WRAP_DIR=$HOME/wrapped
   HOSTS="x86_64-apple-darwin14"
   NAME="__Decenomy__"
@@ -100,7 +102,7 @@ script: |
 
   # Build dependencies for each host
   for i in $HOSTS; do
-    make ${MAKEOPTS} -C ${BASEPREFIX} HOST="${i}"
+    make -j $(nproc) HOST="${i}"
   done
 
   # Faketime for binaries
@@ -113,8 +115,6 @@ script: |
   ./autogen.sh
   CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
   make dist
-  #./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-  #make -j $(nproc) HOST=${i}
 
   SOURCEDIST=`echo __decenomy__-*.tar.gz`
   DISTNAME=`echo ${SOURCEDIST} | sed 's/.tar.*//'`
@@ -144,8 +144,7 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
-    ./contrib/install_db4.sh $(pwd)
-    ./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+    ./configure --prefix=$(pwd)/depends/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
     make -j $(nproc) HOST=${i}
 
     # fails pivx.cpp
