@@ -140,12 +140,12 @@ script: |
     cp ../src/obj/build.h src/obj/
 
     #./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-    #make -j $(nproc) HOST=${HOSTS}
+    #make -j $(nproc) HOST=${i}
 
     #./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --enable-upnp-default ${CONFIGFLAGS}
     CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
     #make ${MAKEOPTS}
-    make
+    make HOST=${i}
 
     make install-strip DESTDIR=${INSTALLPATH}
 
