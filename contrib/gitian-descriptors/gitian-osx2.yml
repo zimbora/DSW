@@ -117,8 +117,13 @@ script: |
   ./autogen.sh
   #CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
   ./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-  #make dist
-  make -j 2 HOST=${HOSTS}
+  make dist
+
+  #make -j 2 HOST=${HOSTS}
+  # error
+  #+ tar xf '../__decenomy__-*.tar.gz'
+  #tar: ../__decenomy__-*.tar.gz: Cannot open: No such file or directory
+
   ls
 
   SOURCEDIST=`echo __decenomy__-*.tar.gz`
