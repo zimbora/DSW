@@ -147,18 +147,17 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
-'''
-    cd ${BASEPREFIX}
+    #cd ${BASEPREFIX}
     # Build dependencies for each host
-    make -j 2 HOST=${i}
-    cd ..
-'''
+    #make -j 2 HOST=${i}
+    #cd ..
+
     ./configure --prefix=$(pwd)/depends/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
     make HOST=${i}
 
     # fails pivx.cpp
     #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
-    #make ${MAKEOPTS}
+    #make ${MAKEOPTS}s
 
     make install-strip DESTDIR=${INSTALLPATH}
 
