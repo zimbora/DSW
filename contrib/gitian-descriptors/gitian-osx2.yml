@@ -100,12 +100,10 @@ script: |
   mkdir -p ${BASEPREFIX}/SDKs
   tar -C ${BASEPREFIX}/SDKs -xf ${BUILD_DIR}/MacOSX10.11.sdk.tar.xz
 
-  cd ${BASEPREFIX}
   # Build dependencies for each host
   for i in $HOSTS; do
-    make -j 2 HOST=${i}
+    make -j 2 -C ${BASEPREFIX} HOST=${i}
   done
-  cd ..
 
   # Faketime for binaries
   export PATH=${PATH_orig}
@@ -115,19 +113,14 @@ script: |
 
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
-  #CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
-  ./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+  CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
+  #CONFIG_SITE=depends/x86_64-apple-darwin14/share/config.site ./configure --prefix=/
+  #./configure --prefix=$(pwd)/depends/x86_64-apple-darwin14 --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+  #./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
   #./configure --prefix=/ --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-  ls $(pwd)/depends/${HOSTS}
+
+  # generating tar.gz folder with code to build images
   make dist
-  ls $(pwd)/depends/${HOSTS}
-
-  #make -j 2 HOST=${HOSTS}
-  # error
-  #+ tar xf '../__decenomy__-*.tar.gz'
-  #tar: ../__decenomy__-*.tar.gz: Cannot open: No such file or directory
-
-  ls
 
   SOURCEDIST=`echo __decenomy__-*.tar.gz`
   DISTNAME=`echo ${SOURCEDIST} | sed 's/.tar.*//'`
@@ -136,6 +129,7 @@ script: |
   mkdir -p temp
   pushd temp
   tar xf ../$SOURCEDIST
+  ls
   find __decenomy__-* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
   popd
 
