@@ -147,10 +147,14 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
-    #cd ${BASEPREFIX}
-    # Build dependencies for each host
-    #make -j 2 HOST=${i}
-    #cd ..
+    # Faketime for depends so intermediate results are comparable
+    export PATH_orig=${PATH}
+    create_global_faketime_wrappers "2000-01-01 12:00:00"
+    create_per-host_faketime_wrappers "2000-01-01 12:00:00"
+    export PATH=${WRAP_DIR}:${PATH}
+
+    # Build dependencies
+    make -j 2 -C ${BASEPREFIX} HOST=${i}
 
     ./configure --prefix=$(pwd)/depends/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
     make HOST=${i}
