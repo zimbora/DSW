@@ -113,7 +113,8 @@ script: |
 
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
-  CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
+  ./configure --prefix=${BASEPREFIX}/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+  #CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
 
   # generating tar.gz folder with code to build images
   make dist
