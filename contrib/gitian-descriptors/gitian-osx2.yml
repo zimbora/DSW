@@ -114,10 +114,6 @@ script: |
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
   CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
-  #CONFIG_SITE=depends/x86_64-apple-darwin14/share/config.site ./configure --prefix=/
-  #./configure --prefix=$(pwd)/depends/x86_64-apple-darwin14 --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-  #./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-  #./configure --prefix=/ --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
 
   # generating tar.gz folder with code to build images
   make dist
@@ -151,11 +147,12 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
+'''
     cd ${BASEPREFIX}
     # Build dependencies for each host
     make -j 2 HOST=${i}
     cd ..
-
+'''
     ./configure --prefix=$(pwd)/depends/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
     make HOST=${i}
 
