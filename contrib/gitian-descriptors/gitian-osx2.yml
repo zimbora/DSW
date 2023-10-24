@@ -156,7 +156,7 @@ script: |
     # Build dependencies
     make -j 2 -C ${BASEPREFIX} HOST=${i}
 
-    ./configure --prefix=$(pwd)/depends/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+    ./configure --prefix=${BASEPREFIX}/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
     make HOST=${i}
 
     # fails pivx.cpp
