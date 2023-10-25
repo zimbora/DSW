@@ -31,7 +31,8 @@ packages:
 #- "libdb4.8-dev"
 #- "libdb4.8++-dev"
 remotes:
-- "url": "https://github.com/zimbora/dsw.git"
+#- "url": "https://github.com/zimbora/dsw.git" use it later on
+- "url": "/home/jsilva/dsw-test"
   "dir": "dsw"
 files:
 - "MacOSX10.11.sdk.tar.xz"
@@ -99,10 +100,12 @@ script: |
   mkdir -p ${BASEPREFIX}/SDKs
   tar -C ${BASEPREFIX}/SDKs -xf ${BUILD_DIR}/MacOSX10.11.sdk.tar.xz
 
+  cd ${BASEPREFIX}
   # Build dependencies for each host
   for i in $HOSTS; do
-    make -j 2 -C ${BASEPREFIX}
+    make -j 2 HOST=${i}
   done
+  cd ..
 
   # Faketime for binaries
   export PATH=${PATH_orig}
@@ -112,11 +115,19 @@ script: |
 
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
-  ./configure --prefix=${BASEPREFIX}/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
   #CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
-
-  # generating tar.gz folder with code to build images
+  ./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+  #./configure --prefix=/ --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+  ls $(pwd)/depends/${HOSTS}
   make dist
+  ls $(pwd)/depends/${HOSTS}
+
+  #make -j 2 HOST=${HOSTS}
+  # error
+  #+ tar xf '../__decenomy__-*.tar.gz'
+  #tar: ../__decenomy__-*.tar.gz: Cannot open: No such file or directory
+
+  ls
 
   SOURCEDIST=`echo __decenomy__-*.tar.gz`
   DISTNAME=`echo ${SOURCEDIST} | sed 's/.tar.*//'`
@@ -125,7 +136,6 @@ script: |
   mkdir -p temp
   pushd temp
   tar xf ../$SOURCEDIST
-  ls
   find __decenomy__-* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
   popd
 
@@ -147,16 +157,12 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
-    # Faketime for depends so intermediate results are comparable
-    export PATH_orig=${PATH}
-    create_global_faketime_wrappers "2000-01-01 12:00:00"
-    create_per-host_faketime_wrappers "2000-01-01 12:00:00"
-    export PATH=${WRAP_DIR}:${PATH}
+    cd ${BASEPREFIX}
+    # Build dependencies for each host
+    make -j 2 HOST=${i}
+    cd ..
 
-    # Build dependencies
-    # make -j 2 -C ${BASEPREFIX} HOST=${i}
-
-    ./configure --prefix=${BASEPREFIX}/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+    ./configure --prefix=$(pwd)/depends/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
     make HOST=${i}
 
     # fails pivx.cpp
