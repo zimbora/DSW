@@ -101,7 +101,7 @@ script: |
 
   # Build dependencies for each host
   for i in $HOSTS; do
-    make -j 2 -C ${BASEPREFIX} HOST=${i}
+    make -j 2 -C ${BASEPREFIX}
   done
 
   # Faketime for binaries
