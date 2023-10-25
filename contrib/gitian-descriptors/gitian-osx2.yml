@@ -32,7 +32,7 @@ packages:
 #- "libdb4.8++-dev"
 remotes:
 #- "url": "https://github.com/zimbora/dsw.git" use it later on
-- "url": "/home/jsilva/dsw-test"
+- "url": "/home/jsilva/dsw"
   "dir": "dsw"
 files:
 - "MacOSX10.11.sdk.tar.xz"
@@ -115,19 +115,13 @@ script: |
 
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
-  #CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
-  ./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-  #./configure --prefix=/ --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-  ls $(pwd)/depends/${HOSTS}
+
+  # Option: 1 - not deterministic
+  #./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+
+  CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
+
   make dist
-  ls $(pwd)/depends/${HOSTS}
-
-  #make -j 2 HOST=${HOSTS}
-  # error
-  #+ tar xf '../__decenomy__-*.tar.gz'
-  #tar: ../__decenomy__-*.tar.gz: Cannot open: No such file or directory
-
-  ls
 
   SOURCEDIST=`echo __decenomy__-*.tar.gz`
   DISTNAME=`echo ${SOURCEDIST} | sed 's/.tar.*//'`
@@ -157,23 +151,21 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
-    # Faketime for depends so intermediate results are comparable
-    export PATH_orig=${PATH}
-    create_global_faketime_wrappers "2000-01-01 12:00:00"
-    create_per-host_faketime_wrappers "2000-01-01 12:00:00"
-    export PATH=${WRAP_DIR}:${PATH}
-
     cd ${BASEPREFIX}
     # Build dependencies for each host
     make -j 2 HOST=${i}
     cd ..
 
-    ./configure --prefix=$(pwd)/depends/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-    make HOST=${i}
+    # Option: 1 - not deterministic
+    #./configure --prefix=$(pwd)/depends/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+    #make HOST=${i}
 
-    # fails pivx.cpp
+    # Option: 2 - fails pivx.cpp
     #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
     #make ${MAKEOPTS}
+
+    CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/x86_64-apple-darwin14 --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
+    make ${MAKEOPTS}
 
     make install-strip DESTDIR=${INSTALLPATH}
 
@@ -206,12 +198,13 @@ script: |
     make deploy
     ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${DISTNAME}-osx-unsigned.dmg
 
-    #cd installed
-    #find . -name "lib*.la" -delete
-    #find . -name "lib*.a" -delete
-    #rm -rf ${DISTNAME}/lib/pkgconfig
-    #find ${DISTNAME} | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}.tar.gz
-    #cd ../../
+    cd installed
+    ls
+    find . -name "lib*.la" -delete
+    find . -name "lib*.a" -delete
+    rm -rf ${DISTNAME}/lib/pkgconfig
+    find ${DISTNAME} | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}.tar.gz
+    cd ../../
   done
 
   #FILENAMES=$(find ${NAME}* | sort)
