@@ -39,8 +39,6 @@ files:
 script: |
   set -e -o pipefail
 
-  nproc=2
-
   WRAP_DIR=$HOME/wrapped
   HOSTS="x86_64-apple-darwin14"
   NAME="__Decenomy__"
@@ -100,12 +98,12 @@ script: |
   mkdir -p ${BASEPREFIX}/SDKs
   tar -C ${BASEPREFIX}/SDKs -xf ${BUILD_DIR}/MacOSX10.11.sdk.tar.xz
 
-  cd ${BASEPREFIX}
+  #cd ${BASEPREFIX}
   # Build dependencies for each host
   for i in $HOSTS; do
-    make -j 2 HOST=${i}
+    make -j 2 -C depends HOST=${i}
   done
-  cd ..
+  #cd ..
 
   # Faketime for binaries
   export PATH=${PATH_orig}
@@ -148,10 +146,10 @@ script: |
     cp ../src/obj/build.h src/obj/
 
     # without it qt/pivx.cpp fails during compilation
-    cd ${BASEPREFIX}
+    #cd ${BASEPREFIX}
     # Build dependencies for each host
-    make -j 2 HOST=${i}
-    cd ..
+    make -j 2 -C ${BASEPREFIX} HOST=${i}
+    #cd ..
 
     CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/x86_64-apple-darwin14 --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
     make ${MAKEOPTS}
