@@ -147,10 +147,11 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
-    #cd ${BASEPREFIX}
+    # without it qt/pivx.cpp fails during compilation
+    cd ${BASEPREFIX}
     # Build dependencies for each host
-    #make -j 2 HOST=${i}
-    #cd ..
+    make -j 2 HOST=${i}
+    cd ..
 
     CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/x86_64-apple-darwin14 --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
     make ${MAKEOPTS}
