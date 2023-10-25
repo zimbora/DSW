@@ -116,11 +116,7 @@ script: |
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
 
-  # Option: 1 - not deterministic
-  #./configure --prefix=$(pwd)/depends/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-
   CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
-
   make dist
 
   SOURCEDIST=`echo __decenomy__-*.tar.gz`
@@ -151,18 +147,10 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
-    cd ${BASEPREFIX}
+    #cd ${BASEPREFIX}
     # Build dependencies for each host
-    make -j 2 HOST=${i}
-    cd ..
-
-    # Option: 1 - not deterministic
-    #./configure --prefix=$(pwd)/depends/${i} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-    #make HOST=${i}
-
-    # Option: 2 - fails pivx.cpp
-    #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
-    #make ${MAKEOPTS}
+    #make -j 2 HOST=${i}
+    #cd ..
 
     CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/x86_64-apple-darwin14 --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
     make ${MAKEOPTS}
