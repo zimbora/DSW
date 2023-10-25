@@ -31,8 +31,7 @@ packages:
 #- "libdb4.8-dev"
 #- "libdb4.8++-dev"
 remotes:
-#- "url": "https://github.com/zimbora/dsw.git" use it later on
-- "url": "/home/jsilva/dsw-test"
+- "url": "https://github.com/zimbora/dsw.git"
   "dir": "dsw"
 files:
 - "MacOSX10.11.sdk.tar.xz"
@@ -113,8 +112,8 @@ script: |
 
   # Create the release tarball using (arbitrarily) the first host
   ./autogen.sh
-  #./configure --prefix=${BASEPREFIX}/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-  CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
+  ./configure --prefix=${BASEPREFIX}/${HOSTS} --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
+  #CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
 
   # generating tar.gz folder with code to build images
   make dist
