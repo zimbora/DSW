@@ -138,6 +138,8 @@ script: |
     cp ../src/obj/build.h src/obj/
 
     ls .
+    ls installed
+    ls build-aux
     ls depends
     # without it qt/pivx.cpp fails during compilation
     cd ${BASEPREFIX}
