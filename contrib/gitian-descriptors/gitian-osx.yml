@@ -137,6 +137,7 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
+    ls ../$SOURCEDIST
     # without it qt/pivx.cpp fails during compilation
     cd ${BASEPREFIX}
     # Build dependencies for each host
@@ -166,7 +167,10 @@ script: |
     ls
     ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${DISTNAME}-osx-unsigned.dmg
 
-    cd installed
+    cd ${INSTALLPATH}
+    cd ..
+    ls
+    #cd installed
     find . -name "lib*.la" -delete
     find . -name "lib*.a" -delete
     rm -rf ${DISTNAME}/lib/pkgconfig
