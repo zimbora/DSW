@@ -137,7 +137,7 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
-    CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=/ --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
+    CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/${i} --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
     make ${MAKEOPTS}
     make install-strip DESTDIR=${INSTALLPATH}
 

@@ -28,11 +28,8 @@ packages:
 - "python3-dev"
 - "python3-setuptools"
 - "fonts-tuffy"
-#- "libdb4.8-dev"
-#- "libdb4.8++-dev"
 remotes:
-#- "url": "https://github.com/zimbora/dsw.git" use it later on
-- "url": "/home/jsilva/dsw"
+- "url": "https://github.com/zimbora/dsw.git"
   "dir": "dsw"
 files:
 - "MacOSX10.11.sdk.tar.xz"
@@ -98,12 +95,9 @@ script: |
   mkdir -p ${BASEPREFIX}/SDKs
   tar -C ${BASEPREFIX}/SDKs -xf ${BUILD_DIR}/MacOSX10.11.sdk.tar.xz
 
-  #cd ${BASEPREFIX}
-  # Build dependencies for each host
   for i in $HOSTS; do
     make -j 2 -C depends HOST=${i}
   done
-  #cd ..
 
   # Faketime for binaries
   export PATH=${PATH_orig}
@@ -136,6 +130,8 @@ script: |
     export PATH=${BASEPREFIX}/${i}/native/bin:${ORIGPATH}
     mkdir -p distsrc-${i}
     cd distsrc-${i}
+
+    # For what I need INSTALLPATH ?? Where I am using it?
     INSTALLPATH=`pwd`/installed/${DISTNAME}
     mkdir -p ${INSTALLPATH}
     tar --strip-components=1 -xf ../$SOURCEDIST
@@ -151,7 +147,9 @@ script: |
     make -j 2 HOST=${i}
     cd ..
 
-    CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/x86_64-apple-darwin14 --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
+    # without config_site deterministic build fails
+    # without prefix compilation also fails
+    CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/${i} --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
     make ${MAKEOPTS}
 
     make install-strip DESTDIR=${INSTALLPATH}
@@ -168,7 +166,7 @@ script: |
     cp ${BASEPREFIX}/${i}/native/bin/${i}-pagestuff unsigned-app-${i}/pagestuff
     mv dist unsigned-app-${i}
     pushd unsigned-app-${i}
-    find . | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-osx-unsigned.tar.gz
+    find . | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${BASE_NAME}-osx64-unsigned.tar.gz
     popd
 
     mkdir -p deploy/macos
@@ -177,13 +175,13 @@ script: |
 
     cd deploy/macos
     FILENAMES=$(find ${BASE_NAME}* | sort)
-    for i in ${FILENAMES}; do
-      echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${i}-osx64.tar.gz
+    for file in ${FILENAMES}; do
+      echo ${file} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${file}-osx64.tar.gz
     done
     cd ../..
 
     make deploy
-    ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${DISTNAME}-osx-unsigned.dmg
+    ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${BASE_NAME}-osx-unsigned.dmg
 
     #cd installed
     #ls
@@ -199,4 +197,3 @@ script: |
   # echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${i}-osx64.tar.gz
   #done
 
-  echo $OUTDIR
