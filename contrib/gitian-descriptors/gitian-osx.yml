@@ -144,7 +144,7 @@ script: |
     make -j 2 HOST=${i}
     cd ..
 
-    cd build_dir
+    cd ${build_dir}
     #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/${i} --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
     CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=${BASEPREFIX}/depends/${i} --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
     make ${MAKEOPTS}
