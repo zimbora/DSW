@@ -137,17 +137,16 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
-    ls .
     build_dir=$(pwd)
-
     # without it qt/pivx.cpp fails during compilation
     cd ${BASEPREFIX}
     # Build dependencies for each host
     make -j 2 HOST=${i}
     cd ..
 
-    cd ${build_dir}
-    CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/${i} --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
+    cd build_dir
+    #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/${i} --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
+    CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=${BASEPREFIX}/depends/${i} --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
     make ${MAKEOPTS}
     make install-strip DESTDIR=${INSTALLPATH}
 
@@ -169,9 +168,8 @@ script: |
     make deploy
     ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${DISTNAME}-osx-unsigned.dmg
 
-
     cd installed
-    ls .
+    ls
     find . -name "lib*.la" -delete
     find . -name "lib*.a" -delete
     rm -rf ${DISTNAME}/lib/pkgconfig
