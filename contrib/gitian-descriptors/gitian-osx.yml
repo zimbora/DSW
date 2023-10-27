@@ -137,10 +137,6 @@ script: |
     mkdir src/obj
     cp ../src/obj/build.h src/obj/
 
-    ls .
-    ls installed
-    ls build-aux
-    ls depends
     # without it qt/pivx.cpp fails during compilation
     cd ${BASEPREFIX}
     # Build dependencies for each host
@@ -167,12 +163,9 @@ script: |
     popd
 
     make deploy
-    ls
     ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${DISTNAME}-osx-unsigned.dmg
 
     cd ${INSTALLPATH}
-    cd ..
-    ls
     #cd installed
     find . -name "lib*.la" -delete
     find . -name "lib*.a" -delete
