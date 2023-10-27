@@ -172,7 +172,7 @@ pipeline {
                     workspace_dir=$(pwd)
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/macosx
                     cd gitian-builder
-                    mv build/out/${BASE_NAME}*-osx64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
+                    mv build/out/${BASE_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
                 '''
             }
         }
