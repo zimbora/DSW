@@ -161,9 +161,10 @@ script: |
     make -j 2 HOST=${i}
     cd ..
 
-    CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/${i} --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS} CFLAGS="${HOST_CFLAGS}" CXXFLAGS="${HOST_CXXFLAGS}"
+    CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/${i} --disable-debug --disable-tests --disable-bench --enable-upnp-default CFLAGS="-O3" CXXFLAGS="-O3"
     make ${MAKEOPTS} HOST=${i}
 
+    ls
     mkdir -p deploy/windows
     cp src/${DISTNAME}d.exe src/${DISTNAME}-cli.exe src/${DISTNAME}-tx.exe src/qt/${DISTNAME}-qt.exe deploy/windows/
     cd deploy/windows
@@ -171,6 +172,8 @@ script: |
     cd ../..
 
     make deploy
+    ls
+
     make install DESTDIR=${INSTALLPATH}
     rename 's/-setup\.exe$/-setup-unsigned.exe/' *-setup.exe
     cp -f __decenomy__-*setup*.exe $OUTDIR/
