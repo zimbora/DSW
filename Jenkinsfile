@@ -129,7 +129,7 @@ pipeline {
                     cd ..
                     workspace_dir=$(pwd)
                     cd gitian-builder
-                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-win2.yml
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-win.yml
                 '''
             }
         }
@@ -142,6 +142,8 @@ pipeline {
                     repo_dir=$(pwd)
                     cd ..
                     workspace_dir=$(pwd)
+                    if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows" ]; then
+                        rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/windows
                     cd gitian-builder
                     mv build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
@@ -170,6 +172,8 @@ pipeline {
                     repo_dir=$(pwd)
                     cd ..
                     workspace_dir=$(pwd)
+                    if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx" ]; then
+                        rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/macosx
                     cd gitian-builder
                     mv build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx

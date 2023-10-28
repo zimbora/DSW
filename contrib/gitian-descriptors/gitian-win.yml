@@ -167,7 +167,7 @@ script: |
     mkdir -p deploy/windows
     cp src/${DISTNAME}d.exe src/${DISTNAME}-cli.exe src/${DISTNAME}-tx.exe src/qt/${DISTNAME}-qt.exe deploy/windows/
     cd deploy/windows
-    find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-osx64.tar.gz
+    find ${DISTNAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-osx64.tar.gz
     cd ../..
 
     make deploy

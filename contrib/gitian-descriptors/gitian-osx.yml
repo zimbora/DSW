@@ -149,14 +149,14 @@ script: |
     make install-strip DESTDIR=${INSTALLPATH}
 
     mkdir -p deploy/macos
-    #cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt ${NAME}-Core.dmg deploy/macos/
-    cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/macos/
+    #cp src/${DISTNAME}d src/${DISTNAME}-cli src/${DISTNAME}-tx src/qt/${DISTNAME}-qt ${NAME}-Core.dmg deploy/macos/
+    cp src/${DISTNAME}d src/${DISTNAME}-cli src/${DISTNAME}-tx src/qt/${DISTNAME}-qt deploy/macos/
 
     # later on - generate only one tar with all those files
     cd deploy/macos
+    find ${DISTNAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-osx64.tar.gz
     cd ../..
 
-    find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-osx64.tar.gz
     make osx_volname
     make deploydir
     OSX_VOLNAME="$(cat osx_volname)"
