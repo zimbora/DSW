@@ -137,6 +137,8 @@ script: |
   for i in ${FILENAMES}; do
     echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${i}-win64.tar.gz
   done
+  find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-osx64.tar.gz
+  cd ..
 
   #zip ${ZIP_NAME}-\$(../${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-Windows.zip ${BASE_NAME}d.exe ${BASE_NAME}-cli.exe ${BASE_NAME}-tx.exe ${BASE_NAME}-qt.exe
   #mkdir -p ../../contrib/innosetup/package
