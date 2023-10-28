@@ -144,6 +144,7 @@ pipeline {
                     workspace_dir=$(pwd)
                     if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows" ]; then
                         rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
+                    fi
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/windows
                     cd gitian-builder
                     mv build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
