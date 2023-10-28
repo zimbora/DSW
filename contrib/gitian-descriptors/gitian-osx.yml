@@ -37,6 +37,7 @@ files:
 script: |
   set -e -o pipefail
 
+  PACKAGE_NAME="__DSW__"
   WRAP_DIR=$HOME/wrapped
   HOSTS="x86_64-apple-darwin14"
   CONFIGFLAGS="--enable-reduce-exports --disable-bench --disable-gui-tests GENISOIMAGE=$WRAP_DIR/genisoimage"
@@ -147,7 +148,14 @@ script: |
     make ${MAKEOPTS}
     make install-strip DESTDIR=${INSTALLPATH}
 
-    ls
+    mkdir -p deploy/macos
+    #cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt ${NAME}-Core.dmg deploy/macos/
+    cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/macos/
+
+    # later on - generate only one tar with all those files
+    cd deploy/macos
+    find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${PACKAGE_NAME}-osx64.tar.gz
+    cd ../..
 
     make osx_volname
     make deploydir
@@ -161,7 +169,7 @@ script: |
     cp ${BASEPREFIX}/${i}/native/bin/${i}-pagestuff unsigned-app-${i}/pagestuff
     mv dist unsigned-app-${i}
     pushd unsigned-app-${i}
-    find . | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-osx-unsigned.tar.gz
+    find . | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-osx64-unsigned.tar.gz
     popd
 
     make deploy
