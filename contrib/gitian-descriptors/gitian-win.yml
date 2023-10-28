@@ -32,6 +32,7 @@ script: |
 
   WRAP_DIR=$HOME/wrapped
   HOSTS="x86_64-w64-mingw32"
+  BASE_NAME="__decenomy__"
   ZIP_NAME="__DSW__"
   CONFIGFLAGS="--enable-reduce-exports --disable-bench --disable-gui-tests"
   FAKETIME_HOST_PROGS="ar ranlib nm windres strip objcopy"
@@ -166,9 +167,9 @@ script: |
 
     ls
     mkdir -p deploy/windows
-    cp src/${DISTNAME}d.exe src/${DISTNAME}-cli.exe src/${DISTNAME}-tx.exe src/qt/${DISTNAME}-qt.exe deploy/windows/
+    cp src/${BASE_NAME}d.exe src/${BASE_NAME}-cli.exe src/${BASE_NAME}-tx.exe src/qt/${BASE_NAME}-qt.exe deploy/windows/
     cd deploy/windows
-    find ${DISTNAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-osx64.tar.gz
+    find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-osx64.tar.gz
     cd ../..
 
     make deploy
