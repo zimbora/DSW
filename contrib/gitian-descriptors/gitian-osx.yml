@@ -37,9 +37,9 @@ files:
 script: |
   set -e -o pipefail
 
-  PACKAGE_NAME="__DSW__"
   WRAP_DIR=$HOME/wrapped
   HOSTS="x86_64-apple-darwin14"
+  ZIP_NAME="__DSW__"
   CONFIGFLAGS="--enable-reduce-exports --disable-bench --disable-gui-tests GENISOIMAGE=$WRAP_DIR/genisoimage"
   FAKETIME_HOST_PROGS=""
   FAKETIME_PROGS="ar ranlib date dmg genisoimage"
@@ -154,9 +154,9 @@ script: |
 
     # later on - generate only one tar with all those files
     cd deploy/macos
-    find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${PACKAGE_NAME}-osx64.tar.gz
     cd ../..
 
+    find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-osx64.tar.gz
     make osx_volname
     make deploydir
     OSX_VOLNAME="$(cat osx_volname)"

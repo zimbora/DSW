@@ -120,7 +120,7 @@ pipeline {
                 '''
             }
         }
-
+        */
         stage("build_x86_64-w64-mingw32") {
 
             steps {
@@ -129,7 +129,7 @@ pipeline {
                     cd ..
                     workspace_dir=$(pwd)
                     cd gitian-builder
-                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-win2.yml
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-win.yml
                 '''
             }
         }
@@ -144,11 +144,11 @@ pipeline {
                     workspace_dir=$(pwd)
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/windows
                     cd gitian-builder
-                    mv build/out/${BASE_NAME}*-win64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
+                    mv build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
                 '''
             }
         }
-        */
+
         stage("build_x86_64-apple-darwin14") {
 
             steps {
@@ -172,7 +172,7 @@ pipeline {
                     workspace_dir=$(pwd)
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/macosx
                     cd gitian-builder
-                    mv build/out/${BASE_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
+                    mv build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
                 '''
             }
         }
