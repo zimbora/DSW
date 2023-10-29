@@ -43,6 +43,7 @@ script: |
   WRAP_DIR=$HOME/wrapped
   #HOSTS="i686-pc-linux-gnu x86_64-linux-gnu arm-linux-gnueabihf aarch64-linux-gnu"
   HOSTS="x86_64-linux-gnu"
+  BASE_NAME="__decenomy__"
   ZIP_NAME="__DSW__"
   CONFIGFLAGS="--enable-glibc-back-compat --enable-reduce-exports --disable-bench --disable-gui-tests --disable-online-rust"
   FAKETIME_HOST_PROGS="gcc g++"
@@ -186,13 +187,18 @@ script: |
     make ${MAKEOPTS} -C src check-symbols
 
     mkdir -p deploy/linux64
-    cp src/${DISTNAME}d src/${DISTNAME}-cli src/${DISTNAME}-tx src/qt/${DISTNAME}-qt deploy/linux64/
+    cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/linux64/
     cd deploy/linux64
-    find ${DISTNAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-linux64.tar.gz
+    find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-linux64.tar.gz
     cd ../..
 
+    ls
 
+    ls ${INSTALLPATH}
     make install DESTDIR=${INSTALLPATH}
+
+    ls ${INSTALLPATH}
+
     cd installed
     find . -name "lib*.la" -delete
     find . -name "lib*.a" -delete
@@ -201,12 +207,6 @@ script: |
     #find ${DISTNAME}/lib -type f -print0 | xargs -0 -n1 -I{} ../contrib/devtools/split-debug.sh {} {} {}.dbg
     #cp ../README.md ${DISTNAME}/
     #cp ../params/install-params.sh ${DISTNAME}/
-
-    FILENAMES=$(find ${BASE_NAME}*/bin/${BASE_NAME}* -not -name "*.dbg" | sort)
-    for i in ${FILENAMES}; do
-      filename=$(basename "$i")
-      echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${filename}-linux64.tar.gz
-    done
 
     #find ${DISTNAME} -name "*.dbg" | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}-debug.tar.gz
     cd ../../

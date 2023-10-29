@@ -39,6 +39,7 @@ script: |
 
   WRAP_DIR=$HOME/wrapped
   HOSTS="x86_64-apple-darwin14"
+  BASE_NAME="__decenomy__"
   ZIP_NAME="__DSW__"
   CONFIGFLAGS="--enable-reduce-exports --disable-bench --disable-gui-tests GENISOIMAGE=$WRAP_DIR/genisoimage"
   FAKETIME_HOST_PROGS=""
@@ -150,11 +151,11 @@ script: |
 
     mkdir -p deploy/macos
     #cp src/${DISTNAME}d src/${DISTNAME}-cli src/${DISTNAME}-tx src/qt/${DISTNAME}-qt ${NAME}-Core.dmg deploy/macos/
-    cp src/${DISTNAME}d src/${DISTNAME}-cli src/${DISTNAME}-tx src/qt/${DISTNAME}-qt deploy/macos/
+    cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/macos/
 
     # later on - generate only one tar with all those files
     cd deploy/macos
-    find ${DISTNAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-osx64.tar.gz
+    find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-osx64.tar.gz
     cd ../..
 
     make osx_volname

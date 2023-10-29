@@ -64,7 +64,7 @@ pipeline {
                 '''
             }
         }
-        /*
+
         stage("build_x86_64-pc-linux-gnu") {
 
             steps {
@@ -86,13 +86,16 @@ pipeline {
                     repo_dir=$(pwd)
                     cd ..
                     workspace_dir=$(pwd)
+                    if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64" ]; then
+                        rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
+                    fi
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/linux64
                     cd gitian-builder
-                    mv build/out/${BASE_NAME}*-linux64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
+                    mv build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
                 '''
             }
         }
-
+        /*
         stage("build_arch64-linux-gnu") {
 
             steps {
