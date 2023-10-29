@@ -192,25 +192,20 @@ script: |
     find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-linux64.tar.gz
     cd ../..
 
-    ls
+    #make install DESTDIR=${INSTALLPATH}
 
-    ls ${INSTALLPATH}
-    make install DESTDIR=${INSTALLPATH}
-
-    ls ${INSTALLPATH}
-
-    cd installed
-    find . -name "lib*.la" -delete
-    find . -name "lib*.a" -delete
-    rm -rf ${DISTNAME}/lib/pkgconfig
-    find ${DISTNAME}/bin -type f -executable -print0 | xargs -0 -n1 -I{} ../contrib/devtools/split-debug.sh {} {} {}.dbg
+    #cd installed
+    #find . -name "lib*.la" -delete
+    #find . -name "lib*.a" -delete
+    #rm -rf ${DISTNAME}/lib/pkgconfig
+    #find ${DISTNAME}/bin -type f -executable -print0 | xargs -0 -n1 -I{} ../contrib/devtools/split-debug.sh {} {} {}.dbg
     #find ${DISTNAME}/lib -type f -print0 | xargs -0 -n1 -I{} ../contrib/devtools/split-debug.sh {} {} {}.dbg
     #cp ../README.md ${DISTNAME}/
     #cp ../params/install-params.sh ${DISTNAME}/
 
     #find ${DISTNAME} -name "*.dbg" | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}-debug.tar.gz
-    cd ../../
-    rm -rf distsrc-${i}
+    #cd ../../
+    #rm -rf distsrc-${i}
   done
   mkdir -p $OUTDIR/src
   mv $SOURCEDIST $OUTDIR/src
