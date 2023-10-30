@@ -91,7 +91,8 @@ pipeline {
                     fi
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/linux64
                     cd gitian-builder
-                    mv build/out/dsw-* build/out/src/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
+                    mv build/out/src/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
+                    cp result/dsw-linux-* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
                 '''
             }
         }
@@ -150,7 +151,8 @@ pipeline {
                     fi
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/windows
                     cd gitian-builder
-                    mv build/out/dsw-* build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
+                    mv build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
+                    cp result/dsw-win* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
                 '''
             }
         }
@@ -180,7 +182,8 @@ pipeline {
                         rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/macosx
                     cd gitian-builder
-                    mv build/out/dsw-* build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
+                    mv build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
+                    cp result/dsw-osx* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macos
                 '''
             }
         }
