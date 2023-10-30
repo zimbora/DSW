@@ -127,11 +127,11 @@ script: |
   cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/arm64/
   cd deploy/arm64
 
-  #FILENAMES=$(find ${BASE_NAME}* | sort)
-  #for i in ${FILENAMES}; do
-  #  echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${i}-arm64.tar.gz
-  #done
-  find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-linux64.tar.gz
+  FILENAMES=$(find ${BASE_NAME}* | sort)
+  for i in ${FILENAMES}; do
+    echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${i}-arm64.tar.gz
+  done
+  find ${BASE_NAME}* | sort | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-arm64.tar.gz
 
   echo $OUTDIR
 
