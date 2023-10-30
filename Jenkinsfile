@@ -73,7 +73,7 @@ pipeline {
                     cd ..
                     workspace_dir=$(pwd)
                     cd gitian-builder
-                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-linux.yml
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-linux-x86_64.yml
                 '''
             }
         }
@@ -91,13 +91,13 @@ pipeline {
                     fi
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/linux64
                     cd gitian-builder
-                    mv build/out/src/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
+                    mv build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
                     cp result/dsw-linux-* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
                 '''
             }
         }
-        /*
-        stage("build_arch64-linux-gnu") {
+
+        stage("build_arm64-linux-gnu") {
 
             steps {
                 echo 'building arm64 ...'
@@ -105,12 +105,12 @@ pipeline {
                     cd ..
                     workspace_dir=$(pwd)
                     cd gitian-builder
-                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-arm64.yml
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-arm_64.yml
                 '''
             }
         }
 
-        stage("deploy_arch64-linux-gnu") {
+        stage("deploy_arm64-linux-gnu") {
 
             steps {
                 echo 'deploy linux ...'
@@ -118,13 +118,17 @@ pipeline {
                     repo_dir=$(pwd)
                     cd ..
                     workspace_dir=$(pwd)
-                    mkdir -p ${BINARIES_PATH}/${BRANCH}/arm64
+                    if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64" ]; then
+                        rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
+                    fi
+                    mkdir -p ${BINARIES_PATH}/${BRANCH}/linux-arm64
                     cd gitian-builder
-                    mv build/out/${BASE_NAME}*-arm64.tar.gz ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/arm64
+                    mv build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux-arm64
+                    cp result/dsw-linux-* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux-arm64
                 '''
             }
         }
-        */
+
         stage("build_x86_64-w64-mingw32") {
 
             steps {
@@ -180,6 +184,7 @@ pipeline {
                     workspace_dir=$(pwd)
                     if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx" ]; then
                         rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
+                    fi
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/macosx
                     cd gitian-builder
                     mv build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
