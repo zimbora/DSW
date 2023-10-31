@@ -89,6 +89,8 @@ pipeline {
                     if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64" ]; then
                         rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
                     fi
+                    rm -r macos
+                    rm -r arm64
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/linux64
                     cd gitian-builder
                     mv build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
@@ -188,7 +190,7 @@ pipeline {
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/macosx
                     cd gitian-builder
                     mv build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
-                    cp result/dsw-osx* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macos
+                    cp result/dsw-osx* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
                 '''
             }
         }
