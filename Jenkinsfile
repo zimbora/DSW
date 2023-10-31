@@ -81,7 +81,7 @@ pipeline {
         stage("deploy_x86_64-pc-linux-gnu") {
 
             steps {
-                echo 'deploy arm64 ...'
+                echo 'deploy linux64 ...'
                 sh '''#!/bin/bash
                     repo_dir=$(pwd)
                     cd ..
@@ -120,8 +120,8 @@ pipeline {
                     repo_dir=$(pwd)
                     cd ..
                     workspace_dir=$(pwd)
-                    if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64" ]; then
-                        rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
+                    if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux-arm64" ]; then
+                        rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux-arm64
                     fi
                     mkdir -p ${BINARIES_PATH}/${BRANCH}/linux-arm64
                     cd gitian-builder
