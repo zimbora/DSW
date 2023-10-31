@@ -112,7 +112,7 @@ def setup_repos():
     if not os.path.isdir('dsw'):
         subprocess.check_call(['git', 'clone', 'https://github.com/zimbora/dsw.git'])
     os.chdir('gitian-builder')
-    make_image_prog = ['bin/make-base-vm', '--suite', 'bionic', '--arch', 'amd64', '--docker-image-digest', '152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98']
+    make_image_prog = ['bin/make-base-vm', '--suite', '18.04', '--arch', 'amd64', '--docker-image-digest', 'dca176c9663a7ba4c1f0e710986f5a25e672842963d95b960191e2d9f7185ebe']
     if args.docker:
         make_image_prog += ['--docker']
     elif not args.kvm:
@@ -148,23 +148,24 @@ def build():
 
     if args.linux:
         print('\nCompiling ' + args.version + ' Linux')
-        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-linux.yml'])
-        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-linux', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-linux.yml'])
-        subprocess.check_call('mv build/out/__decenomy__-*.tar.gz build/out/src/__decenomy__-*.tar.gz ../dsw-binaries/'+args.version, shell=True)
+        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-linux-x86_64.yml'])
+        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-linux', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-linux-x86_64.yml'])
+        #subprocess.check_call('mv build/out/__decenomy__-*.tar.gz build/out/src/__decenomy__-*.tar.gz ../dsw-binaries/'+args.version, shell=True)
+        subprocess.check_call('mv build/out/__DSW__-*.tar.gz ../dsw-binaries/'+args.version, shell=True)
 
     if args.windows:
         print('\nCompiling ' + args.version + ' Windows')
         subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-win.yml'])
         subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-win-unsigned', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-win.yml'])
-        subprocess.check_call('mv build/out/__decenomy__-*-win-unsigned.tar.gz inputs/', shell=True)
-        subprocess.check_call('mv build/out/__decenomy__-*.zip build/out/__decenomy__-*.exe build/out/src/__decenomy__-*.tar.gz ../dsw-binaries/'+args.version, shell=True)
+        #subprocess.check_call('mv build/out/__decenomy__-*-win-unsigned.tar.gz inputs/', shell=True)
+        subprocess.check_call('mv build/out/__DSW__-*.zip build/out/__decenomy__-*.exe ../dsw-binaries/'+args.version, shell=True)
 
     if args.macos:
         print('\nCompiling ' + args.version + ' MacOS')
         subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-osx.yml'])
         subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-osx-unsigned', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-osx.yml'])
-        subprocess.check_call('mv build/out/__decenomy__-*-osx-unsigned.tar.gz inputs/', shell=True)
-        subprocess.check_call('mv build/out/__decenomy__-*.tar.gz build/out/__decenomy__-*.dmg build/out/src/__decenomy__-*.tar.gz ../dsw-binaries/'+args.version, shell=True)
+        #subprocess.check_call('mv build/out/__decenomy__-*-osx-unsigned.tar.gz inputs/', shell=True)
+        subprocess.check_call('mv build/out/__DSW__-*.tar.gz build/out/__decenomy__-*.dmg build/out/__decenomy__-*.tar.gz ../dsw-binaries/'+args.version, shell=True)
 
     os.chdir(workdir)
 
@@ -337,9 +338,13 @@ def main():
     # Disable for MacOS if no SDK found
     #if args.macos and not os.path.isfile('gitian-builder/inputs/Xcode-11.3.1-11C505-extracted-SDK-with-libcxx-headers.tar.gz'):
     if args.macos and not os.path.isfile('gitian-builder/inputs/MacOSX10.11.sdk.tar.xz'):
-        subprocess.check_call(['wget', '-P', 'gitian-builder/inputs/', '-c', 'https://github.com/decenomy/depends/raw/main/SDKs/MacOSX10.11.sdk.tar.xz']);
-        #print('Cannot build for MacOS, SDK does not exist. Will build for other OSes')
-        #args.macos = False
+        try:
+            subprocess.check_call(['wget', '-c','https://github.com/decenomy/depends/raw/main/SDKs/MacOSX10.11.sdk.tar.xz'])
+            subprocess.check_call(['mv','MacOSX10.11.sdk.tar.xz','gitian-builder/inputs/'])
+        except subprocess.CalledProcessError as e:
+            print('Command failed with error code: {e.returncode}')
+            print('Cannot build for MacOS, SDK does not exist. Will build for other OSes')
+            args.macos = False;
 
     args.sign_prog = 'true' if args.detach_sign else 'gpg --detach-sign'
     if args.detach_sign:
