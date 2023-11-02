@@ -348,6 +348,7 @@ def main():
     if args.macos and not os.path.isfile('gitian-builder/inputs/MacOSX10.11.sdk.tar.xz'):
         try:
             subprocess.check_call(['wget', '-c','https://github.com/decenomy/depends/raw/main/SDKs/MacOSX10.11.sdk.tar.xz'])
+            os.makedirs('gitian-builder/inputs')
             subprocess.check_call(['mv','MacOSX10.11.sdk.tar.xz','gitian-builder/inputs/'])
         except subprocess.CalledProcessError as e:
             print('Command failed with error code: {e.returncode}')
