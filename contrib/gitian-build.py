@@ -111,8 +111,7 @@ def setup_repos():
     if not os.path.isdir('dsw'):
         subprocess.check_call(['git', 'clone', 'https://github.com/zimbora/dsw.git'])
     os.chdir('gitian-builder')
-    os.environ['DOCKER_IMAGE_HASH'] = 'dca176c9663a7ba4c1f0e710986f5a25e672842963d95b960191e2d9f7185ebe'
-    make_image_prog = ['bin/make-base-vm', '--suite', '18.04', '--arch', 'amd64', '--docker-image-digest', $DOCKER_IMAGE_HASH]
+    make_image_prog = ['bin/make-base-vm', '--suite', '18.04', '--arch', 'amd64', '--docker-image-digest', 'dca176c9663a7ba4c1f0e710986f5a25e672842963d95b960191e2d9f7185ebe']
     if args.docker:
         make_image_prog += ['--docker']
     elif not args.kvm:
