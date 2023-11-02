@@ -147,10 +147,14 @@ def build():
     subprocess.check_call(['make', '-C', '../dsw/depends', 'download', 'SOURCES_PATH=' + os.getcwd() + '/cache/common'])
 
     if args.linux:
-        print('\nCompiling ' + args.version + ' Linux')
+        print('\nCompiling ' + args.version + ' Linux x86 64')
         subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-linux-x86_64.yml'])
         subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-linux', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-linux-x86_64.yml'])
-        #subprocess.check_call('mv build/out/__decenomy__-*.tar.gz build/out/src/__decenomy__-*.tar.gz ../dsw-binaries/'+args.version, shell=True)
+        subprocess.check_call('mv build/out/__DSW__-*.tar.gz ../dsw-binaries/'+args.version, shell=True)
+
+        print('\nCompiling ' + args.version + ' Linux arm 64')
+        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-linux-x86_64.yml'])
+        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-linux', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-linux-arm_64.yml'])
         subprocess.check_call('mv build/out/__DSW__-*.tar.gz ../dsw-binaries/'+args.version, shell=True)
 
     if args.windows:
@@ -222,8 +226,13 @@ def verify():
     rc = 0
     os.chdir('gitian-builder')
 
-    print('\nVerifying v'+args.version+' Linux\n')
-    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-linux', '../dsw/contrib/gitian-descriptors/gitian-linux.yml']):
+    print('\nVerifying v'+args.version+' Linux x86 64\n')
+    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-linux', '../dsw/contrib/gitian-descriptors/gitian-linux-x86_64.yml']):
+        print('Verifying v'+args.version+' Linux FAILED\n')
+        rc = 1
+
+    print('\nVerifying v'+args.version+' Linux arm 64\n')
+    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-linux', '../dsw/contrib/gitian-descriptors/gitian-linux-arm_64.yml']):
         print('Verifying v'+args.version+' Linux FAILED\n')
         rc = 1
 
