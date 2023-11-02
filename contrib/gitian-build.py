@@ -149,26 +149,26 @@ def build():
         print('\nCompiling ' + args.version + ' Linux x86 64')
         subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-linux-x86_64.yml'])
         subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-linux', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-linux-x86_64.yml'])
-        subprocess.check_call('mv build/out/__DSW__-*.tar.gz ../dsw-binaries/'+args.version, shell=True)
+        subprocess.check_call('mv build/out/__DSW__-linux64.tar.gz ../dsw-binaries/'+args.version, shell=True)
 
         print('\nCompiling ' + args.version + ' Linux arm 64')
-        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-linux-x86_64.yml'])
+        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-linux-arm_64.yml'])
         subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-linux', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-linux-arm_64.yml'])
-        subprocess.check_call('mv build/out/__DSW__-*.tar.gz ../dsw-binaries/'+args.version, shell=True)
+        subprocess.check_call('mv build/out/__DSW__-arm64.tar.gz ../dsw-binaries/'+args.version, shell=True)
 
     if args.windows:
         print('\nCompiling ' + args.version + ' Windows')
         subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-win.yml'])
         subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-win-unsigned', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-win.yml'])
         #subprocess.check_call('mv build/out/__decenomy__-*-win-unsigned.tar.gz inputs/', shell=True)
-        subprocess.check_call('mv build/out/__DSW__-*.zip build/out/__decenomy__-*.exe ../dsw-binaries/'+args.version, shell=True)
+        subprocess.check_call('mv build/out/__DSW__-win.zip build/out/__decenomy__-*.exe ../dsw-binaries/'+args.version, shell=True)
 
     if args.macos:
         print('\nCompiling ' + args.version + ' MacOS')
         subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-osx.yml'])
         subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-osx-unsigned', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-osx.yml'])
         #subprocess.check_call('mv build/out/__decenomy__-*-osx-unsigned.tar.gz inputs/', shell=True)
-        subprocess.check_call('mv build/out/__DSW__-*.tar.gz build/out/__decenomy__-*.dmg build/out/__decenomy__-*.tar.gz ../dsw-binaries/'+args.version, shell=True)
+        subprocess.check_call('mv build/out/__DSW__-osx.tar.gz build/out/__decenomy__-*.dmg ../dsw-binaries/'+args.version, shell=True)
 
     os.chdir(workdir)
 
