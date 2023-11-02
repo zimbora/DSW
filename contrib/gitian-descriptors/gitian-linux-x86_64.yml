@@ -3,7 +3,7 @@ name: "dsw-linux-6.0"
 enable_cache: true
 distro: "ubuntu"
 suites:
-- "$(echo $DOCKER_IMAGE_HASH)"
+- "$DOCKER_IMAGE_HASH"
 architectures:
 - "amd64"
 packages:
