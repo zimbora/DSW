@@ -40,6 +40,7 @@ script: |
   HOSTS="x86_64-apple-darwin14"
   NAME="__Decenomy__"
   BASE_NAME="__decenomy__"
+  PACKAGE_NAME="__DSW__"
   CONFIGFLAGS="--enable-reduce-exports --disable-bench --disable-gui-tests GENISOIMAGE=$WRAP_DIR/genisoimage"
   FAKETIME_HOST_PROGS=""
   FAKETIME_PROGS="ar ranlib date dmg genisoimage"
@@ -173,6 +174,7 @@ script: |
     #cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt ${NAME}-Core.dmg deploy/macos/
     cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/macos/
 
+    # later on - generate only one tar with all those files
     cd deploy/macos
     FILENAMES=$(find ${BASE_NAME}* | sort)
     for file in ${FILENAMES}; do
@@ -183,17 +185,14 @@ script: |
     make deploy
     ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${BASE_NAME}-osx-unsigned.dmg
 
-    #cd installed
-    #ls
-    #find . -name "lib*.la" -delete
-    #find . -name "lib*.a" -delete
-    #rm -rf ${DISTNAME}/lib/pkgconfig
-    #find ${DISTNAME} | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}.tar.gz
-    #cd ../../
+    cd ${INSTALLPATH}
+    cd ..
+    ls
+    find . -name "lib*.la" -delete
+    find . -name "lib*.a" -delete
+    rm -rf ${DISTNAME}/lib/pkgconfig
+    find ${DISTNAME} | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-${i}.tar.gz
+    cd ../../
   done
 
-  #FILENAMES=$(find ${NAME}* | sort)
-  #for i in ${FILENAMES}; do
-  # echo ${i} | tar --mtime="$REFERENCE_DATETIME" --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${i}-osx64.tar.gz
-  #done
 

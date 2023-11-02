@@ -3,7 +3,7 @@ name: "dsw-win-4.3"
 enable_cache: true
 distro: "ubuntu"
 suites:
-- "bionic"
+- $DOCKER_IMAGE_HASH
 architectures:
 - "amd64"
 packages:

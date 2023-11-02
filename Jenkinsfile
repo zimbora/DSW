@@ -45,7 +45,8 @@ pipeline {
                             wget -c https://github.com/decenomy/depends/raw/main/SDKs/MacOSX10.11.sdk.tar.xz
                         fi
                         cd ..
-                        bin/make-base-vm --suite bionic --arch amd64 --docker --docker-image-digest 152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98
+                        export DOCKER_IMAGE_HASH="dca176c9663a7ba4c1f0e710986f5a25e672842963d95b960191e2d9f7185ebe"
+                        bin/make-base-vm --suite bionic --arch amd64 --docker --docker-image-digest $DOCKER_IMAGE_HASH
                         git checkout bin/make-base-vm
                     '''
 
