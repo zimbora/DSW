@@ -1,5 +1,5 @@
 ---
-name: "dsw-linux-6.0"
+name: "dsw-linux-arm-6.0"
 enable_cache: true
 distro: "ubuntu"
 suites:
