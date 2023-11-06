@@ -23,7 +23,7 @@ jobs:
       - name: Prepare env
         run: |
           cd ..
-          cp dsw/gitian-build.py .
+          cp dsw/contrib/gitian-build.py .
           
       - name: Setup gitian-build
         run: |
