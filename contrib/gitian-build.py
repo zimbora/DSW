@@ -291,8 +291,8 @@ def main():
         raise Exception('Error: Native Windows is not supported by this script, use WSL')
 
     if args.host_os == 'linux':
-        if os.environ['USER'] == 'root':
-            raise Exception('Error: Do not run this script as the root user')
+        #if os.environ['USER'] == 'root':
+        #    raise Exception('Error: Do not run this script as the root user')
         args.is_bionic = False
         args.is_fedora = False
         args.is_centos = False
