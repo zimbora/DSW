@@ -97,9 +97,9 @@ script: |
   tar -C ${BASEPREFIX}/SDKs -xf ${BUILD_DIR}/MacOSX10.11.sdk.tar.xz
 
   # Build dependencies for each host
-  for i in $HOSTS; do
-    make ${MAKEOPTS} -C ${BASEPREFIX} HOST="${i}"
-  done
+  #for i in $HOSTS; do
+    #make ${MAKEOPTS} -C ${BASEPREFIX} HOST="${i}"
+  #done
 
   # Faketime for binaries
   export PATH=${PATH_orig}
@@ -108,36 +108,36 @@ script: |
   export PATH=${WRAP_DIR}:${PATH}
 
   # Create the release tarball using (arbitrarily) the first host
-  ./autogen.sh
-  CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
-  make dist
-  SOURCEDIST=`echo __decenomy__-*.tar.gz`
-  DISTNAME=`echo ${SOURCEDIST} | sed 's/.tar.*//'`
+  #./autogen.sh
+  #CONFIG_SITE=${BASEPREFIX}/`echo "${HOSTS}" | awk '{print $1;}'`/share/config.site ./configure --prefix=/
+  #make dist
+  #SOURCEDIST=`echo __decenomy__-*.tar.gz`
+  #DISTNAME=`echo ${SOURCEDIST} | sed 's/.tar.*//'`
 
   # Correct tar file order
-  mkdir -p temp
-  pushd temp
-  tar xf ../$SOURCEDIST
-  find __decenomy__-* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
-  popd
+  #mkdir -p temp
+  #pushd temp
+  #tar xf ../$SOURCEDIST
+  #find __decenomy__-* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ../$SOURCEDIST
+  #popd
 
   # Workaround for tarball not building with the bare tag version (prep)
-  make -C src obj/build.h
+  #make -C src obj/build.h
 
   ORIGPATH="$PATH"
   # Extract the release tarball into a dir for each host and build
   for i in ${HOSTS}; do
     export PATH=${BASEPREFIX}/${i}/native/bin:${ORIGPATH}
-    mkdir -p distsrc-${i}
-    cd distsrc-${i}
-    INSTALLPATH=`pwd`/installed/${DISTNAME}
-    mkdir -p ${INSTALLPATH}
-    tar --strip-components=1 -xf ../$SOURCEDIST
+    #mkdir -p distsrc-${i}
+    #cd distsrc-${i}
+    #INSTALLPATH=`pwd`/installed/${DISTNAME}
+    #mkdir -p ${INSTALLPATH}
+    #tar --strip-components=1 -xf ../$SOURCEDIST
 
     # Workaround for tarball not building with the bare tag version
-    echo '#!/bin/true' > ../share/genbuild.sh
-    mkdir src/obj
-    cp ../src/obj/build.h src/obj/
+    #echo '#!/bin/true' > ../share/genbuild.sh
+    #mkdir src/obj
+    #cp ../src/obj/build.h src/obj/
 
     # without it qt/pivx.cpp fails during compilation
     cd ${BASEPREFIX}
@@ -147,7 +147,7 @@ script: |
 
     CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/${i} --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS}
     make ${MAKEOPTS}
-    make install-strip DESTDIR=${INSTALLPATH}
+    #make install-strip DESTDIR=${INSTALLPATH}
 
     mkdir -p deploy/macos
     #cp src/${DISTNAME}d src/${DISTNAME}-cli src/${DISTNAME}-tx src/qt/${DISTNAME}-qt ${NAME}-Core.dmg deploy/macos/
@@ -158,20 +158,20 @@ script: |
     find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-osx.tar.gz
     cd ../..
 
-    make osx_volname
-    make deploydir
-    OSX_VOLNAME="$(cat osx_volname)"
-    mkdir -p unsigned-app-${i}
-    cp osx_volname unsigned-app-${i}/
-    cp contrib/macdeploy/detached-sig-apply.sh unsigned-app-${i}
-    cp contrib/macdeploy/detached-sig-create.sh unsigned-app-${i}
-    cp ${BASEPREFIX}/${i}/native/bin/dmg ${BASEPREFIX}/${i}/native/bin/genisoimage unsigned-app-${i}
-    cp ${BASEPREFIX}/${i}/native/bin/${i}-codesign_allocate unsigned-app-${i}/codesign_allocate
-    cp ${BASEPREFIX}/${i}/native/bin/${i}-pagestuff unsigned-app-${i}/pagestuff
-    mv dist unsigned-app-${i}
-    pushd unsigned-app-${i}
-    find . | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-osx-unsigned.tar.gz
-    popd
+    #make osx_volname
+    #make deploydir
+    #OSX_VOLNAME="$(cat osx_volname)"
+    #mkdir -p unsigned-app-${i}
+    #cp osx_volname unsigned-app-${i}/
+    #cp contrib/macdeploy/detached-sig-apply.sh unsigned-app-${i}
+    #cp contrib/macdeploy/detached-sig-create.sh unsigned-app-${i}
+    #cp ${BASEPREFIX}/${i}/native/bin/dmg ${BASEPREFIX}/${i}/native/bin/genisoimage unsigned-app-${i}
+    #cp ${BASEPREFIX}/${i}/native/bin/${i}-codesign_allocate unsigned-app-${i}/codesign_allocate
+    #cp ${BASEPREFIX}/${i}/native/bin/${i}-pagestuff unsigned-app-${i}/pagestuff
+    #mv dist unsigned-app-${i}
+    #pushd unsigned-app-${i}
+    #find . | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${DISTNAME}-osx-unsigned.tar.gz
+    #popd
 
     make deploy
     ${WRAP_DIR}/dmg dmg "${OSX_VOLNAME}.dmg" ${OUTDIR}/${DISTNAME}-osx-unsigned.dmg
@@ -185,5 +185,5 @@ script: |
     #cd ../../
 
   done
-  mkdir -p $OUTDIR/src
-  mv $SOURCEDIST $OUTDIR/src
+  #mkdir -p $OUTDIR/src
+  #mv $SOURCEDIST $OUTDIR/src
