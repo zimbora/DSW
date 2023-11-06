@@ -38,9 +38,10 @@ jobs:
 
       - name: Commit and push
         run: |
+          ls
           mkdir -p dsw/$GITHUB_ACTOR/gitian.sigs
           cp -r dsw-binaries dsw/$GITHUB_ACTOR/
-          cp -r gitian.sigs/develop* dsw/$GITHUB_ACTOR/gitian.sigs
+          cp -r gitian.sigs/develop* dsw/gitian.sigs
           cd dsw
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
