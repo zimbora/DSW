@@ -1,0 +1,37 @@
+name: Run gitian-builder
+
+on:
+  push:
+    branches:
+      - main  # Change this to your main branch
+
+jobs:
+  run-python-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          path: dsw
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8  
+
+      - name: Prepare env
+        run: |
+          cd ..
+          cp dsw/gitian-build.py .
+          
+      - name: Setup gitian-build
+        run: |
+          chmod +x gitian-build.py
+          ./gitian-build.py --docker --setup
+
+      - name: Run gitian-build
+        run: |
+          export NAME=satoshi
+          export BRANCH=develop
+          ./gitian-build.py --docker -b -c -o l --detach-sign $NAME $BRANCH -j 12 -m 24000
