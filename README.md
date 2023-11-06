@@ -1,3 +1,4 @@
+Test Github Action 1
 **ALERT: This document should be updated for EACH coin individually**
 **The dummy values below belongs to Sapphire Coin**
 
