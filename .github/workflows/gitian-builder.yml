@@ -3,7 +3,7 @@ name: Run gitian-builder
 on:
   push:
     branches:
-      - main  # Change this to your main branch
+      - develop  # Change this to your main branch
 
 jobs:
   run-python-script:
