@@ -38,8 +38,12 @@ jobs:
 
       - name: Commit and push
         run: |
+          mkdir -p dsw/$GITHUB_ACTOR
+          mv dsw-binaries dsw/$GITHUB_ACTOR/
+          mv gitian.sigs dsw/$GITHUB_ACTOR/
+          cd dsw
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add dsw-binaries gitian.sigs
+          git add $GITHUB_ACTOR/dsw-binaries $GITHUB_ACTOR/gitian.sigs
           git commit -m "Commit changes in dsw-binaries and gitian.sigs"
           git push
