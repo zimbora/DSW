@@ -12,17 +12,14 @@ jobs:
   run-python-script:
     #runs-on: ubuntu-latest
     runs-on: self-hosted
-      
-    container:
-      image: ubuntu:latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: develop
           path: dsw
-          
+
       - name: Checkout Source Repository
         uses: actions/checkout@v3
         with:
@@ -35,11 +32,16 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.8  
-
+      
       - name: Prepare env
         run: |
-          ls
           cp dsw/contrib/gitian-build.py .
+          ls
+          
+      - name: Remove dsw repo # workaround for git versions before 2.18 /ubuntu 18.04 uses 2.17
+        run: |
+          rm -rf dsw
+          ls
           
       - name: Setup gitian-build
         run: |
