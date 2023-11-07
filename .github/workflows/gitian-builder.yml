@@ -10,8 +10,8 @@ on:
 
 jobs:
   run-python-script:
-    #runs-on: ubuntu-latest
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
+    #runs-on: self-hosted
 
     steps:
       - name: Checkout code
@@ -36,7 +36,6 @@ jobs:
       - name: Prepare env # let python download repo
         run: |
           cp dsw/contrib/gitian-build.py .
-          rm -rf dsw
           
       - name: Setup gitian-build
         run: |
