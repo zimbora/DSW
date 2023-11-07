@@ -59,6 +59,5 @@ jobs:
           git config --global user.name "${GITHUB_ACTOR}"
           git checkout -b $BRANCH_NAME
           git add .
-          git commit -m "Adds sigs"
-          git push origin $BRANCH_NAME
+          git diff-index --quiet HEAD || git commit -m "new release" && git push origin $BRANCH_NAME
 
