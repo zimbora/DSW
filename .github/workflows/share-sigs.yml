@@ -3,9 +3,7 @@ name: Share sigs
 on:
   push:
     branches:
-      - develop  # Adjust to the branch you want to trigger the action
-permissions:
-  contents: write
+      - test  # Adjust to the branch you want to trigger the action
   
 jobs:
   checkout_repository:
