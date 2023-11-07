@@ -1,0 +1,18 @@
+name: Share sigs
+
+on:
+  push:
+    branches:
+      - main  # Adjust to the branch you want to trigger the action
+
+jobs:
+  checkout_repository:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Repository
+        uses: actions/checkout@v3
+        with:
+          repository: zimbora/gitian.sigs
+          ref: main  # Adjust to the branch or tag you want to check out
+          #token: ${{ secrets.PAT_TOKEN }}
