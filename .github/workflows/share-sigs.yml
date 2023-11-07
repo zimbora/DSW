@@ -3,7 +3,7 @@ name: Share sigs
 on:
   push:
     branches:
-      - main  # Adjust to the branch you want to trigger the action
+      - develop  # Adjust to the branch you want to trigger the action
 
 jobs:
   checkout_repository:
@@ -16,3 +16,7 @@ jobs:
           repository: zimbora/gitian.sigs
           ref: main  # Adjust to the branch or tag you want to check out
           #token: ${{ secrets.PAT_TOKEN }}
+
+      - name: List
+        run: |
+          ls
