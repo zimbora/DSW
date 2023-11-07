@@ -34,7 +34,8 @@ jobs:
       - name: Push Changes to Repository
         run: |
           BRANCH_NAME="sigs-${GITHUB_ACTOR}"
-          #git push origin $BRANCH_NAME
-          git push https://${{ secrets.PAT_TOKEN }}@github.com/zimbora/gitian.sigs.git $BRANCH_NAME
+          git remote set-url origin https://${{ secrets.PAT_TOKEN }}@github.com/zimbora/gitian.sigs.git
+          git push origin $BRANCH_NAME
+          #git push https://${{ secrets.PAT_TOKEN }}@github.com/zimbora/gitian.sigs.git $BRANCH_NAME
 
       
