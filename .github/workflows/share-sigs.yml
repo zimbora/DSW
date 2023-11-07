@@ -25,18 +25,13 @@ jobs:
 
       - name: Add Files to the Branch
         run: |
-        
           mkdir -p develop-linux/${GITHUB_ACTOR}
           touch develop-linux/${GITHUB_ACTOR}/dsw-linux-6.0-build.assert
-          git config --local user.email "lucas.ua.eet@gmail.com"
-          git config --local user.name "${GITHUB_ACTOR}"
           git add .
           git commit -m "Adds sigs"
         continue-on-error: true
 
       - name: Push Changes to Repository
-        env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           BRANCH_NAME="sigs-${GITHUB_ACTOR}"
           #git push origin $BRANCH_NAME
