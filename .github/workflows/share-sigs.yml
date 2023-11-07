@@ -20,6 +20,7 @@ jobs:
       - name: Create and Checkout New Branch
         run: |
           BRANCH_NAME="sigs-${GITHUB_ACTOR}"
+          git remote set-url origin https://${{ secrets.PAT_TOKEN }}@github.com/zimbora/gitian.sigs.git
           git checkout -b $BRANCH_NAME
         continue-on-error: true  # This is set to continue if the branch already exists
 
@@ -34,7 +35,6 @@ jobs:
       - name: Push Changes to Repository
         run: |
           BRANCH_NAME="sigs-${GITHUB_ACTOR}"
-          git remote set-url origin https://${{ secrets.PAT_TOKEN }}@github.com/zimbora/gitian.sigs.git
           git push origin $BRANCH_NAME
           #git push https://${{ secrets.PAT_TOKEN }}@github.com/zimbora/gitian.sigs.git $BRANCH_NAME
 
