@@ -37,6 +37,7 @@ jobs:
           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           BRANCH_NAME="sigs-${GITHUB_ACTOR}"
-          git push origin $BRANCH_NAME
+          #git push origin $BRANCH_NAME
+          git push https://${{ secrets.PAT_TOKEN }}@github.com/zimbora/gitian.sigs.git $BRANCH_NAME
 
       
