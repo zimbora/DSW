@@ -25,6 +25,7 @@ jobs:
 
       - name: Create and Checkout New Branch
         run: |
+          ls
           cd gitian.sigs
           BRANCH_NAME="sigs-${GITHUB_ACTOR}"
           git config --global user.email "lucas.ua.eet@gmail.com"
