@@ -18,14 +18,13 @@ jobs:
         with:
           repository: zimbora/gitian.sigs
           ref: main  # Adjust to the branch or tag you want to check out
-          #token: ${{ secrets.PAT_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Create and Checkout New Branch
         run: |
           BRANCH_NAME="sigs-${GITHUB_ACTOR}"
           git config --global user.email "lucas.ua.eet@gmail.com"
           git config --global user.name "${GITHUB_ACTOR}"
-          git remote set-url origin https://${{ secrets.PAT_TOKEN }}@github.com/zimbora/gitian.sigs.git
           git checkout -b $BRANCH_NAME
         continue-on-error: true  # This is set to continue if the branch already exists
 
@@ -41,18 +40,4 @@ jobs:
         run: |
           BRANCH_NAME="sigs-${GITHUB_ACTOR}"
           git push origin $BRANCH_NAME
-          #git push https://${{ secrets.PAT_TOKEN }}@github.com/zimbora/gitian.sigs.git $BRANCH_NAME
           
-          # Store the PAT in a file that can be accessed by the
-          # GitHub CLI.
-          echo "${{ secrets.PAT_TOKEN }}" > token.txt
-
-          # Authorize GitHub CLI for the current repository and
-          # create a pull-requests containing the updates.
-          gh auth login --with-token < token.txt
-          gh pr create \
-            --body "" \
-            --title "Automated pull request" \
-            --head "$BRANCH_NAME" \
-            --base "main"
-      
