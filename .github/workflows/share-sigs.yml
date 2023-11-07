@@ -42,5 +42,17 @@ jobs:
           BRANCH_NAME="sigs-${GITHUB_ACTOR}"
           git push origin $BRANCH_NAME
           #git push https://${{ secrets.PAT_TOKEN }}@github.com/zimbora/gitian.sigs.git $BRANCH_NAME
+          
+          # Store the PAT in a file that can be accessed by the
+          # GitHub CLI.
+          echo "${{ secrets.PAT_TOKEN }}" > token.txt
 
+          # Authorize GitHub CLI for the current repository and
+          # create a pull-requests containing the updates.
+          gh auth login --with-token < token.txt
+          gh pr create \
+            --body "" \
+            --title "Automated pull request" \
+            --head "$BRANCH_NAME" \
+            --base "main"
       
