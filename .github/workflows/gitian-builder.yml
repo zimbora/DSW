@@ -49,7 +49,7 @@ jobs:
           export NAME=$GITHUB_ACTOR
           export BRANCH=develop
           cd ..
-          #./gitian-build.py --docker -b -c -o l --detach-sign $NAME $BRANCH -j 12 -m 24000
+          ./gitian-build.py --docker -b -c -o l --detach-sign $NAME $BRANCH -j 12 -m 24000
 
       - name: Commit and push
         run: |
