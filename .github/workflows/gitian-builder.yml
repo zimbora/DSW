@@ -7,11 +7,14 @@ on:
   #release:
     #types:
       #- created  # Trigger the workflow when a new release is created
-      
+
 jobs:
   run-python-script:
     #runs-on: ubuntu-latest
     runs-on: self-hosted
+      
+    container:
+      image: ubuntu:latest
 
     steps:
       - name: Checkout code
