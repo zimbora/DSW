@@ -38,11 +38,6 @@ jobs:
           cp dsw/contrib/gitian-build.py .
           ls
           
-      - name: Remove dsw repo # workaround for git versions before 2.18 /ubuntu 18.04 uses 2.17
-        run: |
-          rm -rf dsw
-          ls
-          
       - name: Setup gitian-build
         run: |
           chmod +x gitian-build.py
@@ -54,7 +49,7 @@ jobs:
           export NAME=$GITHUB_ACTOR
           export BRANCH=develop
           cd ..
-          ./gitian-build.py --docker -b -c -o l --detach-sign $NAME $BRANCH -j 12 -m 24000
+          #./gitian-build.py --docker -b -c -o l --detach-sign $NAME $BRANCH -j 12 -m 24000
 
       - name: Commit and push
         run: |
