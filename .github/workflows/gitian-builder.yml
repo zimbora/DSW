@@ -33,10 +33,10 @@ jobs:
         with:
           python-version: 3.8  
       
-      - name: Prepare env
+      - name: Prepare env # let python download repo
         run: |
           cp dsw/contrib/gitian-build.py .
-          ls
+          rm -rf dsw
           
       - name: Setup gitian-build
         run: |
