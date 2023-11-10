@@ -162,18 +162,18 @@ script: |
     make -j 2 HOST=${i}
     cd ..
 
-    CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/${i} --disable-debug --disable-tests --disable-bench --enable-upnp-default CFLAGS="-O3" CXXFLAGS="-O3"
+    CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/${i} --disable-ccache --disable-maintainer-mode --disable-dependency-tracking ${CONFIGFLAGS} CFLAGS="${HOST_CFLAGS}" CXXFLAGS="${HOST_CXXFLAGS}"
+    #CONFIG_SITE=${BASEPREFIX}/${i}/share/config.site ./configure --prefix=$(pwd)/depends/${i} --disable-debug --disable-tests --disable-bench --enable-upnp-default CFLAGS="-O3" CXXFLAGS="-O3"
     make ${MAKEOPTS} HOST=${i}
 
-    ls
     mkdir -p deploy/windows
     cp src/${BASE_NAME}d.exe src/${BASE_NAME}-cli.exe src/${BASE_NAME}-tx.exe src/qt/${BASE_NAME}-qt.exe deploy/windows/
+
     cd deploy/windows
     find ${BASE_NAME}* -type f | sort |  zip -X@ ${OUTDIR}/${ZIP_NAME}-win.zip
     cd ../..
 
     make deploy
-    ls
 
     make install DESTDIR=${INSTALLPATH}
     rename 's/-setup\.exe$/-setup-unsigned.exe/' *-setup.exe

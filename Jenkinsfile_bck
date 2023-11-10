@@ -6,27 +6,62 @@ pipeline {
         NAME = '__Decenomy__'
         BASE_NAME = '__decenomy__'
         ZIP_NAME = '__DSW__'
+        BINARIES_PATH = 'dsw-binaries'
+        GIT_REPO = 'https://github.com/zimbora/dsw.git'
+        BRANCH = 'develop'
+        USE_DOCKER = '1'
+        PROJECT = "dsw"
     }
 
     stages {
+
+        stage("gitian") {
+
+            steps {
+                echo 'preparing gitian ...'
+                    sh '''#!/bin/bash
+                        repo_dir=$(pwd)
+                        echo ${env.WORKSPACE}
+                        cd ..
+                        mkdir -p ${BINARIES_PATH}/${BRANCH}
+                        if [ -d "gitian-builder" ]; then
+                            cd gitian-builder
+                            git pull origin master
+                            cd ..
+                        else
+                            git clone https://github.com/devrandom/gitian-builder.git
+                        fi
+                        cd gitian-builder
+                        mkdir -p inputs
+                        cd inputs
+                        if [ -d "dsw" ]; then
+                            cd dsw
+                            git pull origin develop
+                            cd ..
+                        else
+                            git clone ${GIT_REPO}
+                        fi
+                        if [ ! -f "MacOSX10.11.sdk.tar.xz" ]; then
+                            wget -c https://github.com/decenomy/depends/raw/main/SDKs/MacOSX10.11.sdk.tar.xz
+                        fi
+                        cd ..
+                        export DOCKER_IMAGE_HASH="dca176c9663a7ba4c1f0e710986f5a25e672842963d95b960191e2d9f7185ebe"
+                        bin/make-base-vm --suite bionic --arch amd64 --docker --docker-image-digest $DOCKER_IMAGE_HASH
+                        git checkout bin/make-base-vm
+                    '''
+
+            }
+        }
 
         stage("depends") {
 
             steps {
                 echo 'building depends ...'
                 sh '''#!/bin/bash
-                    cd depends
-                    make -j $(nproc) HOST=x86_64-pc-linux-gnu
-                    make -j $(nproc) HOST=x86_64-w64-mingw32
-                    make -j $(nproc) HOST=aarch64-linux-gnu
-                    make -j $(nproc) HOST=arm-linux-gnueabihf
-                    rm -rf SDKs
-                    mkdir SDKs
-                    cd SDKs
-                    wget -c https://github.com/decenomy/depends/raw/main/SDKs/MacOSX10.11.sdk.tar.xz
-                    tar -xf MacOSX10.11.sdk.tar.xz
+                    repo_dir=$(pwd)
                     cd ..
-                    make -j $(nproc) HOST=x86_64-apple-darwin14
+                    workspace_dir=$(pwd)
+                    make -C ${repo_dir}/depends download SOURCES_PATH=${workspace_dir}/gitian-builder/cache/common
                 '''
             }
         }
@@ -34,12 +69,12 @@ pipeline {
         stage("build_x86_64-pc-linux-gnu") {
 
             steps {
-                echo 'building linux ...'
+                echo 'building linux64 ...'
                 sh '''#!/bin/bash
-                    make clean
-                    ./autogen.sh
-                    ./configure --enable-glibc-back-compat --prefix=$(pwd)/depends/x86_64-pc-linux-gnu LDFLAGS="-static-libstdc++" --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --with-pic --enable-upnp-default CPPFLAGS="-fPIC -O3" CXXFLAGS="-fPIC -O3"
-	                make -j $(nproc) HOST=x86_64-pc-linux-gnu
+                    cd ..
+                    workspace_dir=$(pwd)
+                    cd gitian-builder
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-linux-x86_64.yml
                 '''
             }
         }
@@ -47,19 +82,53 @@ pipeline {
         stage("deploy_x86_64-pc-linux-gnu") {
 
             steps {
-                echo 'deploy linux ...'
+                echo 'deploy linux64 ...'
+                sh '''#!/bin/bash
+                    repo_dir=$(pwd)
+                    cd ..
+                    workspace_dir=$(pwd)
+                    if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64" ]; then
+                        rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
+                    fi
+                    rm -r macos
+                    rm -r arm64
+                    mkdir -p ${BINARIES_PATH}/${BRANCH}/linux64
+                    cd gitian-builder
+                    mv build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
+                    cp result/dsw-linux-* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux64
+                '''
+            }
+        }
 
-                sh """#!/bin/bash
-                    mkdir -p deploy/linux
-                    strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
-                    cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/linux/
-                    cd deploy/linux
-                    touch ${BASE_NAME}-cli
-                    rm ../${BASE_NAME}-cli
-                    cp ${BASE_NAME}-cli ../
-                    zip ${ZIP_NAME}-\$(../${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-Linux.zip ${BASE_NAME}d ${BASE_NAME}-cli ${BASE_NAME}-tx ${BASE_NAME}-qt
-                    rm -f ${BASE_NAME}d ${BASE_NAME}-cli ${BASE_NAME}-tx ${BASE_NAME}-qt
-                """
+        stage("build_arm64-linux-gnu") {
+
+            steps {
+                echo 'building arm64 ...'
+                sh '''#!/bin/bash
+                    cd ..
+                    workspace_dir=$(pwd)
+                    cd gitian-builder
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-linux-arm_64.yml
+                '''
+            }
+        }
+
+        stage("deploy_arm64-linux-gnu") {
+
+            steps {
+                echo 'deploy linux ...'
+                sh '''#!/bin/bash
+                    repo_dir=$(pwd)
+                    cd ..
+                    workspace_dir=$(pwd)
+                    if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux-arm64" ]; then
+                        rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux-arm64
+                    fi
+                    mkdir -p ${BINARIES_PATH}/${BRANCH}/linux-arm64
+                    cd gitian-builder
+                    mv build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux-arm64
+                    cp result/dsw-linux-* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/linux-arm64
+                '''
             }
         }
 
@@ -68,10 +137,10 @@ pipeline {
             steps {
                 echo 'building windows ...'
                 sh '''#!/bin/bash
-                    make clean
-                    ./autogen.sh
-                    ./configure --prefix=$(pwd)/depends/x86_64-w64-mingw32 --disable-debug --disable-tests --disable-bench --enable-upnp-default CFLAGS="-O3" CXXFLAGS="-O3"
-	                make -j $(nproc) HOST=x86_64-w64-mingw32
+                    cd ..
+                    workspace_dir=$(pwd)
+                    cd gitian-builder
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-win.yml
                 '''
             }
         }
@@ -80,21 +149,18 @@ pipeline {
 
             steps {
                 echo 'deploy windows ...'
-                sh """#!/bin/bash
-                    mkdir -p deploy/windows
-                    strip -s src/${BASE_NAME}d.exe src/${BASE_NAME}-cli.exe src/${BASE_NAME}-tx.exe src/qt/${BASE_NAME}-qt.exe
-                    cp src/${BASE_NAME}d.exe src/${BASE_NAME}-cli.exe src/${BASE_NAME}-tx.exe src/qt/${BASE_NAME}-qt.exe deploy/windows/
-                    cd deploy/windows
-                    zip ${ZIP_NAME}-\$(../${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-Windows.zip ${BASE_NAME}d.exe ${BASE_NAME}-cli.exe ${BASE_NAME}-tx.exe ${BASE_NAME}-qt.exe
-                    mkdir -p ../../contrib/innosetup/package
-                    mv ${BASE_NAME}* ../../contrib/innosetup/package/
-                    cd ../../contrib/innosetup/
-                    wine ~/.wine/drive_c/Program\\ Files\\ \\(x86\\)/Inno\\ Setup\\ 6/ISCC.exe setup.iss
-                    mv output/${NAME}Setup.exe ../../deploy/windows/${NAME}-\$(../../deploy/${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-Setup.exe
-                    cd ../../deploy/windows/
-                    zip ${ZIP_NAME}-\$(../${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-WindowsSetup.zip ${NAME}-\$(../${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-Setup.exe
-                    rm -f ${NAME}-\$(../${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-Setup.exe
-                """
+                sh '''#!/bin/bash
+                    repo_dir=$(pwd)
+                    cd ..
+                    workspace_dir=$(pwd)
+                    if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows" ]; then
+                        rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
+                    fi
+                    mkdir -p ${BINARIES_PATH}/${BRANCH}/windows
+                    cd gitian-builder
+                    mv build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
+                    cp result/dsw-win* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/windows
+                '''
             }
         }
 
@@ -103,10 +169,10 @@ pipeline {
             steps {
                 echo 'building macos ...'
                 sh '''#!/bin/bash
-                    make clean
-                    ./autogen.sh
-                    ./configure --prefix=$(pwd)/depends/x86_64-apple-darwin14 --enable-cxx --enable-static --disable-shared --disable-debug --disable-tests --disable-bench --enable-upnp-default
-                    make HOST=x86_64-apple-darwin14
+                    cd ..
+                    workspace_dir=$(pwd)
+                    cd gitian-builder
+                    ./bin/gbuild -j 2 -m 6000 --commit ${PROJECT}=${BRANCH} --url ${PROJECT}=${GIT_REPO} ${workspace_dir}/gitian-builder/inputs/${PROJECT}/contrib/gitian-descriptors/gitian-osx.yml
                 '''
             }
         }
@@ -114,73 +180,23 @@ pipeline {
         stage("deploy_x86_64-apple-darwin14") {
 
             steps {
-                echo 'deploy macos ...'
-                sh """#!/bin/bash
-                    strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
-                    make deploy HOST=x86_64-apple-darwin14
-                    mkdir -p deploy/macos
-                    cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt ${NAME}-Core.dmg deploy/macos/
-                    cd deploy/macos
-                    zip ${ZIP_NAME}-\$(../${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-MacOS.zip ${BASE_NAME}d ${BASE_NAME}-cli ${BASE_NAME}-tx ${BASE_NAME}-qt ${NAME}-Core.dmg
-                    rm -f ${BASE_NAME}d ${BASE_NAME}-cli ${BASE_NAME}-tx ${BASE_NAME}-qt ${NAME}-Core.dmg
-                """
-            }
-        }
-
-        stage("build_aarch64-linux-gnu") {
-
-            steps {
-                echo 'building aarch64 ...'
+                echo 'deploy windows ...'
                 sh '''#!/bin/bash
-                    make clean
-                    ./autogen.sh
-                    ./configure --prefix=$(pwd)/depends/aarch64-linux-gnu --disable-debug --disable-tests --disable-bench --enable-upnp-default CFLAGS="-O3" CXXFLAGS="-O3"
-	                make -j $(nproc) HOST=aarch64-linux-gnu
+                    repo_dir=$(pwd)
+                    cd ..
+                    workspace_dir=$(pwd)
+                    if [ -d "${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx" ]; then
+                        rm -r ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
+                    fi
+                    mkdir -p ${BINARIES_PATH}/${BRANCH}/macosx
+                    cd gitian-builder
+                    mv build/out/${BASE_NAME}* build/out/${ZIP_NAME}* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
+                    cp result/dsw-osx* ${workspace_dir}/${BINARIES_PATH}/${BRANCH}/macosx
                 '''
             }
         }
 
-        stage("deploy_aarch64-linux-gnu") {
 
-            steps {
-                echo 'deploy aarch64 ...'
-                sh """#!/bin/bash
-                    mkdir -p deploy/aarch64
-                    strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
-                    cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/aarch64/
-                    cd deploy/aarch64
-                    zip ${ZIP_NAME}-\$(../${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-aarch64.zip ${BASE_NAME}d ${BASE_NAME}-cli ${BASE_NAME}-tx ${BASE_NAME}-qt
-                    rm -f ${BASE_NAME}d ${BASE_NAME}-cli ${BASE_NAME}-tx ${BASE_NAME}-qt
-                """
-            }
-        }
 
-        stage("build_arm-linux-gnueabihf") {
-
-            steps {
-                echo 'building aarch32 ...'
-                sh '''#!/bin/bash
-                    make clean
-                    ./autogen.sh
-                    ./configure --prefix=$(pwd)/depends/arm-linux-gnueabihf --disable-debug --disable-tests --disable-bench --enable-upnp-default CFLAGS="-O3" CXXFLAGS="-O3"
-	                make -j $(nproc) HOST=arm-linux-gnueabihf
-                '''
-            }
-        }
-
-        stage("deploy_arm-linux-gnueabihf") {
-
-            steps {
-                echo 'deploy aarch32 ...'
-                sh """#!/bin/bash
-                    mkdir -p deploy/aarch32
-                    strip -s src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt
-                    cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/aarch32/
-                    cd deploy/aarch32
-                    zip ${ZIP_NAME}-\$(../${BASE_NAME}-cli --version | head -n1 | awk -F'[ -]' '{ print \$5 }' | sed s/v//)-aarch32.zip ${BASE_NAME}d ${BASE_NAME}-cli ${BASE_NAME}-tx ${BASE_NAME}-qt
-                    rm -f ${BASE_NAME}d ${BASE_NAME}-cli ${BASE_NAME}-tx ${BASE_NAME}-qt
-                """
-            }
-        }
     }
 }
