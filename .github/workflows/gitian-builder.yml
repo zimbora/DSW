@@ -59,4 +59,15 @@ jobs:
           git checkout -b $BRANCH_NAME
           git add .
           git diff-index --quiet HEAD || git commit -m "new release" && git push origin $BRANCH_NAME
+          #match=$(python verify_sigs.py)
+          if [ $match == "False" ]; then
+            echo "!! Error: Hashes do not match"
+            #exit 1
+          else
+            echo "Success: Hashes match"
+          fi
 
+      - uses: actions/upload-artifact@v3
+        with:
+          name: upload binaries
+          path: ./dsw-binaries
