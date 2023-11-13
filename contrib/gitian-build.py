@@ -148,12 +148,13 @@ def build():
     if args.linux:
         print('\nCompiling ' + args.version + ' Linux x86 64')
         subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-linux-x86_64.yml'])
-        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'/linux', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-linux-x86_64.yml'])
+        subprocess.check_call(['mkdir', '-p', '../gitian.sigs/'+args.version]
+        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', 'linux-x86', '--destination', '../gitian.sigs/'+args.version+'/', '../dsw/contrib/gitian-descriptors/gitian-linux-x86_64.yml'])
         subprocess.check_call('mv build/out/__DSW__-linux64.tar.gz ../dsw-binaries/'+args.version, shell=True)
 
         print('\nCompiling ' + args.version + ' Linux arm 64')
         subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'dsw='+args.commit, '--url', 'dsw='+args.url, '../dsw/contrib/gitian-descriptors/gitian-linux-arm_64.yml'])
-        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'/linux', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-linux-arm_64.yml'])
+        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'linux-arm64', '--destination', '../gitian.sigs/', '../dsw/contrib/gitian-descriptors/gitian-linux-arm_64.yml'])
         subprocess.check_call('mv build/out/__DSW__-arm64.tar.gz ../dsw-binaries/'+args.version, shell=True)
 
     if args.windows:
