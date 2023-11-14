@@ -29,8 +29,7 @@ packages:
 - "python3-setuptools"
 - "fonts-tuffy"
 remotes:
-#- "url": "https://github.com/zimbora/dsw.git" use it later on
-- "url": "/home/jsilva/dsw"
+- "url": "https://github.com/zimbora/dsw.git"
   "dir": "dsw"
 files:
 - "MacOSX10.11.sdk.tar.xz"
@@ -150,10 +149,8 @@ script: |
     make install-strip DESTDIR=${INSTALLPATH}
 
     mkdir -p deploy/macos
-    #cp src/${DISTNAME}d src/${DISTNAME}-cli src/${DISTNAME}-tx src/qt/${DISTNAME}-qt ${NAME}-Core.dmg deploy/macos/
     cp src/${BASE_NAME}d src/${BASE_NAME}-cli src/${BASE_NAME}-tx src/qt/${BASE_NAME}-qt deploy/macos/
 
-    # later on - generate only one tar with all those files
     cd deploy/macos
     find ${BASE_NAME}* | sort | tar --no-recursion --mode='u+rw,go+r-w,a+X' --owner=0 --group=0 -c -T - | gzip -9n > ${OUTDIR}/${ZIP_NAME}-osx.tar.gz
     cd ../..
