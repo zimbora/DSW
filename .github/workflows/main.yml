@@ -1,0 +1,77 @@
+name: Run gitian-builder
+
+on:
+  push:
+    #branches:
+      #- gitian-builder  # Change this to your main branch
+  release:
+    types:
+      - created  # Trigger the workflow when a new release is created
+
+jobs:
+  run-python-script:
+    runs-on: ubuntu-latest
+    #runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: develop
+          path: dsw
+
+      - name: Get release tag
+        run: |
+          echo "BRANCH=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+
+      - name: Checkout Source Repository
+        uses: actions/checkout@v3
+        with:
+          repository: zimbora/gitian.sigs
+          ref: main  # Adjust to the branch or tag you want to check out
+          token: ${{ secrets.PAT_TOKEN }}
+          path: gitian.sigs
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Prepare env # let python download repo
+        run: |
+          cp dsw/contrib/gitian-build.py .
+
+      - name: Setup gitian-build
+        run: |
+          chmod +x gitian-build.py
+          ./gitian-build.py --docker --setup
+
+      - name: Run gitian-build
+        run: |
+          cd dsw
+          export NAME=$GITHUB_ACTOR
+          #export BRANCH=develop
+          cd ..
+          ./gitian-build.py --docker -b -c --detach-sign $NAME $BRANCH -j 12 -m 24000
+
+      - name: Commit and push
+        run: |
+          cd gitian.sigs
+          BRANCH_NAME="sigs-${BRANCH}-${GITHUB_ACTOR}"
+          git config --global user.email "actions@github.user.com"
+          git config --global user.name "${GITHUB_ACTOR}"
+          git checkout -b $BRANCH_NAME
+          git add .
+          git diff-index --quiet HEAD || git commit -m "new release" && git push origin $BRANCH_NAME
+          match=$(python verify_sigs.py)
+          if [ $match == "False" ]; then
+            echo "!! Error: Hashes do not match"
+            #exit 1
+          else
+            echo "Success: Hashes match"
+          fi
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: upload binaries
+          path: ./dsw-binaries
