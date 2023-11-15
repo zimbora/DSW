@@ -50,7 +50,9 @@ jobs:
         run: |
           cd dsw
           export NAME=$GITHUB_ACTOR
-          #export BRANCH=develop
+          if [ ! $BRANCH ]; then
+            export BRANCH=develop
+          fi
           cd ..
           ./gitian-build.py --docker -b -c --detach-sign $NAME $BRANCH -j 12 -m 24000
 
