@@ -9,6 +9,7 @@ ARG TICKER=__DSW__
 ARG NAME=__Decenomy__
 ARG BASE_NAME=__decenomy__
 ARG TARGET=master
+ARG GITHUB_USER=decenomy
 
 RUN sleep 30
 
@@ -20,11 +21,23 @@ fi
 # Switch to the repository directory
 WORKDIR /$TICKER
 
-# Check out the $TARGET
-RUN git stash --include-untracked && \
+# Add fork repo if the GitHub user is not 'decenomy'
+RUN if [ "$GITHUB_USER" != "decenomy" ]; then \
+  git remote add $GITHUB_USER https://github.com/$GITHUB_USER/$TICKER.git; \
+fi
+
+# Check out the $TARGET branch
+RUN if [ "$GITHUB_USER" = "decenomy" ]; then \
+    git stash --include-untracked && \
     git fetch --all && \
     (git checkout $TARGET || git checkout -B $TARGET) && \
-    (git reset --hard origin/$TARGET || git reset --hard $TARGET)
+    (git reset --hard origin/$TARGET || git reset --hard $TARGET); \
+  else \
+    git stash --include-untracked && \
+    git fetch $GITHUB_USER && \
+    (git checkout $GITHUB_USER/$TARGET || git checkout -B $GITHUB_USER/$TARGET) && \
+    (git reset --hard $GITHUB_USER/$TARGET); \
+fi
 
 RUN git log -1 --format="%at" | xargs -I{} date -d @{} "+%Y-%m-%d %H:%M:%S" > /git_timestamp
 RUN git log -1 --format="%at" | xargs -I{} date -d @{} "+%Y%m%d%H%M.%S" > /git_timestamp_touch

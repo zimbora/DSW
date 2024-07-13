@@ -17,8 +17,8 @@ UI_NAME=${UI_NAME:-"__Decenomy__"}
 BASE_NAME=${BASE_NAME:-"__decenomy__"}
 
 # Sets the github environment variables
-GITHUB_USER="decenomy"
-GITHUB_REPO="__DSW__"
+GITHUB_USER=${GITHUB_USER:-"decenomy"}
+GITHUB_REPO=${GITHUB_REPO:-"__DSW__"}
 
 # Sets the build environment variable
 #   0: The build will use the builder image available on docker hub
@@ -227,6 +227,7 @@ docker buildx build \
 	--build-arg NAME=$UI_NAME \
 	--build-arg BASE_NAME=$BASE_NAME \
 	--build-arg TARGET=$TARGET \
+	--build-arg GITHUB_USER=$GITHUB_USER \
 	-f $WALLET_DOCKER_FILE.tmp \
 	-t $image_tag \
 	 .
