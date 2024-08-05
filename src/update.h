@@ -28,7 +28,7 @@
 #endif
 
 #ifndef TICKER
-#define TICKER "DSW"
+#define TICKER "KYAN"
 #endif
 
 #define UPDATE_ZIP_FOLDER "newRelease.zip"
